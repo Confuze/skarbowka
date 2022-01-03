@@ -7,10 +7,11 @@
     "start": "npm run index.js",
     "dev": "nodedmon index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["discord", "discord-bot", "discord-economy-bot", "for-fun"],
+  "author": "Confuze <confuze.graph.11@gmail.com>",
+  "license": "GPL-3.0",
   "dependencies": {
     "discord.js": "^13.5.0"
-  }
+  },
+  "repository": "github:Confuze/skarbowka"
 }
