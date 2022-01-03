@@ -1,0 +1,16 @@
+{
+  "name": "skarbowka",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run index.js",
+    "dev": "nodedmon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^13.5.0"
+  }
+}
