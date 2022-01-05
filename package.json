@@ -4,14 +4,26 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run index.js",
-    "dev": "nodedmon index.js"
+    "start": "node ./build/index.js",
+    "dev": "nodemon ./src/index.ts",
+    "build": "tsc"
   },
-  "keywords": ["discord", "discord-bot", "discord-economy-bot", "for-fun"],
+  "keywords": [
+    "discord",
+    "discord-bot",
+    "discord-economy-bot",
+    "for-fun"
+  ],
   "author": "Confuze <confuze.graph.11@gmail.com>",
   "license": "GPL-3.0",
   "dependencies": {
-    "discord.js": "^13.5.0"
+    "discord.js": "^13.5.0",
+    "dotenv": "^10.0.0"
   },
-  "repository": "github:Confuze/skarbowka"
+  "repository": "github:Confuze/skarbowka",
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4"
+  }
 }
