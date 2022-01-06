@@ -1,4 +1,4 @@
-import { Guild } from "discord.js";
+import { CommandInteraction, Interaction } from "discord.js";
 import { Command } from "../template";
 
 export const command: Command = {
@@ -6,5 +6,10 @@ export const command: Command = {
 	description: "Komenda testowa do sprawdzenia działalności bota",
 	category: "General",
 	type: "CHAT_INPUT",
-	defaultPermission: true
+	defaultPermission: true,
+	execute(i: CommandInteraction) {
+		i.reply({
+			content: "Pong essa byku jestem najlepszy norbirt lewandowski dostał złotą piłkę w alternatywnej rzeczywistości"
+		});
+	}
 };

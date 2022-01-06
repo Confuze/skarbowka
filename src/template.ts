@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ApplicationCommandType } from "discord.js";
+import { ApplicationCommandOptionData, ApplicationCommandType, Client, CommandInteraction, Guild, Interaction } from "discord.js";
 
 interface Command {
     name: string
@@ -9,6 +9,7 @@ interface Command {
     type: ApplicationCommandType
     options?: ApplicationCommandOptionData
     defaultPermission?: boolean
+    execute(i:CommandInteraction): any
 }
 
 export { Command }

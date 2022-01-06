@@ -2,10 +2,13 @@ import { Client, Intents } from "discord.js";
 import * as dotenv from "dotenv";
 dotenv.config();
 import * as fs from "fs";
+import { Command } from "./template";
 
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS]
 });
+
+let commands: any = [];
 
 // This function will later be called through the console so it doesnt spam to the discord api but for now I'm calling it once the client logs in since this is just testing and I only upload commands to one guild
 const refreshCommands = async () => {
@@ -18,7 +21,6 @@ const refreshCommands = async () => {
 
 	const commandFiles = fs.readdirSync(__dirname + "/commands").filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
 
-	let commands = [];
 	for (const file of commandFiles) {
 		const commandObj = await import(`./commands/${file}`);
 		const command = commandObj.command;
@@ -28,7 +30,8 @@ const refreshCommands = async () => {
 			description: command.description,
 			type: command.type,
 			options: command.options,
-			defaultPermission: command.defaultPermission
+			defaultPermission: command.defaultPermission,
+			execute: command.execute
 		});
 	}
 
@@ -42,6 +45,10 @@ client.once("ready", () => {
 
 client.on("interactionCreate", (i) => {
 	if (!i.isCommand()) return;
+
+	for (const command of commands) {
+		if (i.commandName === command.name) command.execute(i);
+	}
 });
 
 client.login(process.env.TOKEN);
