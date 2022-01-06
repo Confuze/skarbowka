@@ -1,4 +1,4 @@
-import { Client, Intents } from "discord.js";
+import { Client, Intents, Interaction } from "discord.js";
 import * as dotenv from "dotenv";
 dotenv.config();
 import * as fs from "fs";
@@ -43,7 +43,7 @@ client.once("ready", () => {
 	refreshCommands();
 });
 
-client.on("interactionCreate", (i) => {
+client.on("interactionCreate", (i: Interaction) => {
 	if (!i.isCommand()) return;
 
 	for (const command of commands) {
