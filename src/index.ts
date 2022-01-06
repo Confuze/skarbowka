@@ -47,7 +47,7 @@ client.on("interactionCreate", (i) => {
 	if (!i.isCommand()) return;
 
 	for (const command of commands) {
-		if (i.commandName === command.name) command.execute(i);
+		if (i.commandName === command.name) command.execute(i, client);
 	}
 });
 

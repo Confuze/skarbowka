@@ -9,7 +9,7 @@ interface Command {
     type: ApplicationCommandType
     options?: ApplicationCommandOptionData
     defaultPermission?: boolean
-    execute(i:CommandInteraction): any
+    execute(i:CommandInteraction, client:Client): void
 }
 
 export { Command }

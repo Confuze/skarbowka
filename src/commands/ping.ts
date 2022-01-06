@@ -1,4 +1,4 @@
-import { CommandInteraction, Interaction } from "discord.js";
+import { CommandInteraction, MessageEmbed } from "discord.js";
 import { Command } from "../template";
 
 export const command: Command = {
@@ -7,9 +7,17 @@ export const command: Command = {
 	category: "General",
 	type: "CHAT_INPUT",
 	defaultPermission: true,
-	execute(i: CommandInteraction) {
+	execute(i, client) {
+		const embed = new MessageEmbed({
+			title: "WSZYSTKO DZIAŁA!",
+			timestamp: i.createdAt,
+			color: "#6de56b",
+			fields: [{ name: "Ping bota", value: `\`${client.ws.ping}\`` }],
+			footer: { text: `Wywołane przez: ${i.user.username}`, iconURL: i.user.displayAvatarURL() }
+		});
+
 		i.reply({
-			content: "Pong essa byku jestem najlepszy norbirt lewandowski dostał złotą piłkę w alternatywnej rzeczywistości"
+			embeds: [embed]
 		});
 	}
 };
