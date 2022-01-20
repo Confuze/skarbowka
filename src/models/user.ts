@@ -7,6 +7,6 @@ const userSchema = new Schema({
 	bank: { type: Number, required: true }
 });
 
-const userModel = model("User", userSchema);
+const User = model("User", userSchema);
 
-export default userModel;
+export default User;

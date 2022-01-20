@@ -2,10 +2,11 @@ import { GuildMember, Interaction, MessageEmbed } from "discord.js";
 import { commands, client } from "../index";
 import Command from "../structures/command";
 import Event from "../structures/event";
+import User from "../models/user";
 
 const event: Event = {
 	name: "interactionCreate",
-	execute(i: Interaction) {
+	async execute(i: Interaction) {
 		if (!i.isCommand()) return;
 
 		const command: Command = commands.find((cmd: Command) => {
@@ -41,6 +42,18 @@ const event: Event = {
 
 			i.reply({ embeds: [embed], ephemeral: true });
 			return;
+		}
+
+		const userDocument = await User.findOne({ userId: i.user.id, guildId: i.guildId });
+
+		if (!userDocument && command.category === "ECONOMY") {
+			const user = new User({
+				userId: i.user.id,
+				guildId: i.guildId,
+				cash: 0,
+				bank: 0
+			});
+			user.save();
 		}
 
 		try {

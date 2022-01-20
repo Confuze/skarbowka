@@ -4,6 +4,12 @@ dotenv.config();
 import { readdirSync } from "fs";
 import Command from "./structures/command";
 import Event from "./structures/event";
+import mongoose from "mongoose";
+
+mongoose
+	.connect(`mongodb+srv://confuze:${process.env.MONGO_PWD}@skarbowka.zbnnn.mongodb.net/skarbowka?retryWrites=true&w=majority`)
+	.then(() => console.log("Connected to the database"))
+	.catch((err) => console.log(err));
 
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS]
