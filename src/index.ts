@@ -1,8 +1,9 @@
-import { Client, Intents, Interaction } from "discord.js";
+import { Client, Intents } from "discord.js";
 import * as dotenv from "dotenv";
 dotenv.config();
-import * as fs from "fs";
-import { Command } from "./template";
+import { readdirSync } from "fs";
+import Command from "./structures/command";
+import Event from "./structures/event";
 
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS]
@@ -10,45 +11,32 @@ const client = new Client({
 
 let commands: any = [];
 
-// This function will later be called through the console so it doesnt spam to the discord api but for now I'm calling it once the client logs in since this is just testing and I only upload commands to one guild
-const refreshCommands = async () => {
-	let target: any;
-	if (process.env.TESTING_SERVER) {
-		target = client.guilds.cache.get(process.env.TESTING_SERVER);
-	} else {
-		target = client.application;
+const eventFiles = readdirSync(__dirname + "/events").filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
+
+(async () => {
+	for (const file of eventFiles) {
+		const event = (await import(__dirname + `/events/${file}`)).default as Event;
+
+		if (event.once) {
+			client.once(event.name, (...args) => event.execute(...args));
+		} else {
+			client.on(event.name, (...args) => event.execute(...args));
+		}
 	}
+})();
 
-	const commandFiles = fs.readdirSync(__dirname + "/commands").filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
+const commandFolders = readdirSync(__dirname + "/commands");
+for (const folder of commandFolders) {
+	const commandFiles = readdirSync(__dirname + `/commands/${folder}`).filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
+	(async () => {
+		for (const file of commandFiles) {
+			const command = (await import(__dirname + `/commands/${folder}/${file}`)).default as Command;
 
-	for (const file of commandFiles) {
-		const commandObj = await import(`./commands/${file}`);
-		const command = commandObj.command;
+			commands.push(command);
+		}
+	})();
+}
 
-		commands.push({
-			name: command.name,
-			description: command.description,
-			type: command.type,
-			options: command.options,
-			defaultPermission: command.defaultPermission,
-			execute: command.execute
-		});
-	}
-
-	target.commands.set(commands);
-};
-
-client.once("ready", () => {
-	console.log("Bot jest gotowy do kradnięcia");
-	refreshCommands();
-});
-
-client.on("interactionCreate", (i: Interaction) => {
-	if (!i.isCommand()) return;
-
-	for (const command of commands) {
-		if (i.commandName === command.name) command.execute(i, client);
-	}
-});
+export { commands, client };
 
 client.login(process.env.TOKEN);

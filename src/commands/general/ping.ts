@@ -1,14 +1,15 @@
 import { MessageEmbed } from "discord.js";
-import { Command } from "../template";
+import Command from "../../structures/command";
 
-export const command: Command = {
+const command: Command = {
 	name: "ping",
 	description: "Komenda testowa do sprawdzenia działalności bota",
+	category: "GENERAL",
 	type: "CHAT_INPUT",
 	defaultPermission: true,
 	execute(i, client) {
 		const embed = new MessageEmbed({
-			title: "WSZYSTKO DZIAŁA!",
+			title: "Wszystko działa!",
 			timestamp: i.createdAt,
 			color: "#6de56b",
 			fields: [{ name: "Ping bota", value: `\`${client.ws.ping}\`` }],
@@ -20,3 +21,5 @@ export const command: Command = {
 		});
 	}
 };
+
+export default command;
