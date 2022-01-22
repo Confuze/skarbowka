@@ -11,7 +11,7 @@ interface Command {
 	guildOnly?: boolean;
 	type: ApplicationCommandType;
 	defaultPermission?: boolean;
-	options?: ApplicationCommandOptionData;
+	options?: ApplicationCommandOptionData[];
 	execute(i: CommandInteraction, client: Client, options?: Options): void;
 }
 

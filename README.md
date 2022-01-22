@@ -19,8 +19,9 @@ Hope u enjoy ;p
 - [x] add better handler
 - [ ] add even better handler
 - [x] add basic commands
-- [ ] add basic economy
+- [x] add basic economy
 - [ ] add cool economy
+- [ ] add even cooler economy
 - [ ] add cool handler
 - [ ] host the bot 24/7
 - [ ] make bot cool

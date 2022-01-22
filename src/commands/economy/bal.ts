@@ -1,6 +1,5 @@
 import { MessageEmbed } from "discord.js";
 import Command from "../../structures/command";
-import mongoose from "mongoose";
 import User from "../../models/user";
 
 const command: Command = {
