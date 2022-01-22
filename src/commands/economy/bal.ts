@@ -14,6 +14,7 @@ const command: Command = {
 		const embed = new MessageEmbed({
 			author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
 			description: `Miejsce w tablicy wyników: \`kiedyś dodam\`\n Użyj \`/top\` dla pełnej tabeli`, // TODO: Make a leaderboard system (should be easy)
+			color: "#6de56b",
 			fields: [
 				{
 					name: "Gotówka",
