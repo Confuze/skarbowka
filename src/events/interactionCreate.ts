@@ -3,6 +3,8 @@ import { commands, client } from "../index";
 import Command from "../structures/command";
 import Event from "../structures/event";
 import User from "../models/user";
+import { newUser } from "../util/db";
+import { embedColors } from "../util/embeds";
 
 const event: Event = {
 	name: "interactionCreate",
@@ -21,12 +23,10 @@ const event: Event = {
 			const embed = new MessageEmbed({
 				title: "Brak uprawnień!",
 				description: "Nie posiadasz uprawnień do użycia tej komendy",
-				timestamp: i.createdAt,
-				color: "#D13D23",
-				fields: [{ name: "Wymagane uprawnienia", value: command.permissions.map((perm) => `\`${perm}\``).join(", ") }],
-				footer: { text: `Wywołane przez: ${i.user.username}`, iconURL: i.user.displayAvatarURL() }
+				color: embedColors.failure,
+				fields: [{ name: "Wymagane uprawnienia", value: command.permissions.map((perm) => `\`${perm}\``).join(", ") }]
 			});
-
+			embed.setColor(embedColors.failure);
 			i.reply({ embeds: [embed], ephemeral: true });
 			return;
 		}
@@ -35,9 +35,7 @@ const event: Event = {
 			const embed = new MessageEmbed({
 				title: "Brak uprawnień!",
 				description: "Ta komenda jest dostępna tylko dla właściciela bota",
-				timestamp: i.createdAt,
-				color: "#D13D23",
-				footer: { text: `Wywołane przez: ${i.user.username}`, iconURL: i.user.displayAvatarURL() }
+				color: embedColors.failure
 			});
 
 			i.reply({ embeds: [embed], ephemeral: true });
@@ -46,15 +44,7 @@ const event: Event = {
 
 		const userDocument = await User.findOne({ userId: i.user.id, guildId: i.guildId });
 
-		if (!userDocument && command.category === "ECONOMY") {
-			const user = new User({
-				userId: i.user.id,
-				guildId: i.guildId,
-				cash: 0,
-				bank: 0
-			});
-			user.save();
-		}
+		if (!userDocument && command.category === "ECONOMY") await newUser(i.guild!, i.user);
 
 		try {
 			command.execute(i, client, i.options);

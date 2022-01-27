@@ -1,11 +1,13 @@
 import { MessageEmbed } from "discord.js";
 import Command from "../../structures/command";
 import User from "../../models/user";
+import { embedColors } from "../../util/embeds";
 
 const command: Command = {
 	name: "bal",
 	description: "Pokazuje ilość pieniędzy oraz miejsce w tabeli",
 	category: "ECONOMY",
+	guildOnly: true,
 	type: "CHAT_INPUT",
 	defaultPermission: true,
 	async execute(i, client) {
@@ -14,7 +16,7 @@ const command: Command = {
 		const embed = new MessageEmbed({
 			author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
 			description: `Miejsce w tablicy wyników: \`kiedyś dodam\`\n Użyj \`/top\` dla pełnej tabeli`, // TODO: Make a leaderboard system (should be easy)
-			color: "#6de56b",
+			color: embedColors.info,
 			fields: [
 				{
 					name: "Gotówka",

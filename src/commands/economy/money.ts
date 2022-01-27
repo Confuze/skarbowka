@@ -2,12 +2,15 @@ import { MessageEmbed } from "discord.js";
 import Command from "../../structures/command";
 import User from "../../models/user";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { newUser } from "../../util/db";
+import { embedColors } from "../../util/embeds";
 
 const command: Command = {
 	name: "money",
 	description: "Dodaje lub zabiera pieniądze do banku/gotówki użytkownika",
 	category: "ECONOMY",
 	permissions: ["ADMINISTRATOR"],
+	guildOnly: true,
 	type: "CHAT_INPUT",
 	defaultPermission: true,
 	options: [
@@ -69,6 +72,8 @@ const command: Command = {
 		const user = i.options.getUser("user", true);
 		const target = i.options.getString("target", false);
 		const userModel = await User.findOne({ userId: user.id, guildId: i.guildId });
+		if (!userModel) newUser(i.guild!, user);
+
 		const embed = new MessageEmbed({
 			fields: [
 				{
@@ -80,7 +85,7 @@ const command: Command = {
 					value: `\`${amount} 💰\``
 				}
 			],
-			color: "#6de56b"
+			color: embedColors.success
 		});
 
 		if (subcommand === "add") {
