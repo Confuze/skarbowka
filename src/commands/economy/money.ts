@@ -102,15 +102,15 @@ const command: Command = {
 			embed.setTitle(`Pomyślnie dodano pieniądze`);
 			userModel.save();
 		} else if (subcommand === "take") {
-			if (!target || target === "bank") {
-				userModel.bank = userModel.bank - amount;
-				embed.addField("Cel", "Bank");
-			} else if (target === "cash") {
-				userModel.cash = userModel.cash - amount;
+			if (!target || target === "cash") {
+				userModel.cash = userModel.cash - amount >= 0 ? userModel.cash - amount : 0;
 				embed.addField("Cel", "Gotówka");
+			} else if (target === "bank") {
+				userModel.bank = userModel.bank - amount >= 0 ? userModel.bank - amount : 0;
+				embed.addField("Cel", "Bank");
 			} else {
 				i.reply({ content: "Niepoprawne użycie komendy", ephemeral: true }); // TODO: Same as above
-			} // TODO: Make it so you can't make an user have negative balance
+			}
 
 			embed.setTitle(`Pomyślnie zabrano pieniądze`);
 			userModel.save();

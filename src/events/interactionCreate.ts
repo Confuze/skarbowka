@@ -41,10 +41,10 @@ const event: Event = {
 			i.reply({ embeds: [embed], ephemeral: true });
 			return;
 		}
-
-		const userDocument = await User.findOne({ userId: i.user.id, guildId: i.guildId });
-
-		if (!userDocument && command.category === "ECONOMY") await newUser(i.guild!, i.user);
+		if (command.category === "ECONOMY") {
+			const userDocument = await User.findOne({ userId: i.user.id, guildId: i.guildId });
+			if (userDocument) await newUser(i.guild!, i.user);
+		}
 
 		try {
 			command.execute(i, client, i.options);
