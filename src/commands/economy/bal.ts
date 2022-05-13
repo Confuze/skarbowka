@@ -12,6 +12,8 @@ const command: Command = {
 	guildOnly: true,
 	type: "CHAT_INPUT",
 	defaultPermission: true,
+	usage: "/bal [@użytkownik]",
+	exampleUsage: "/bal lub /bal @Confuze#1359",
 	options: [
 		{
 			type: ApplicationCommandOptionTypes.USER,
@@ -26,7 +28,7 @@ const command: Command = {
 		if (mention) user = mention;
 		else user = i.user;
 
-		if (!(await User.findOne({ userId: user.id, guildId: i.guildId }))) newUser(i.guild!, user);
+		if (!(User.findOne({ userId: user.id, guildId: i.guildId }))) newUser(i.guild!, user);
 
 		const userModel = await User.findOne({ userId: user.id, guildId: i.guildId });
 

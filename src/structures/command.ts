@@ -1,4 +1,11 @@
-import { ApplicationCommandOptionData, ApplicationCommandType, Client, CommandInteraction, Options, PermissionString } from "discord.js";
+import {
+	ApplicationCommandOptionData,
+	ApplicationCommandType,
+	Client,
+	CommandInteraction,
+	Options,
+	PermissionString
+} from "discord.js";
 
 interface Command {
 	name: string;
@@ -12,6 +19,8 @@ interface Command {
 	type: ApplicationCommandType;
 	defaultPermission?: boolean;
 	options?: ApplicationCommandOptionData[];
+	usage: string;
+	exampleUsage: string;
 	execute(i: CommandInteraction, client: Client, options?: Options): void;
 }
 

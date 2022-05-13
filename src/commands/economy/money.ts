@@ -3,7 +3,7 @@ import Command from "../../structures/command";
 import User from "../../models/user";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { newUser } from "../../util/db";
-import { embedColors } from "../../util/embeds";
+import { embedColors, syntaxEmbed } from "../../util/embeds";
 
 const command: Command = {
 	name: "money",
@@ -13,6 +13,8 @@ const command: Command = {
 	guildOnly: true,
 	type: "CHAT_INPUT",
 	defaultPermission: true,
+	usage: "/money <add/take> <kwota> <@użytkownik> [cel]",
+	exampleUsage: "/money add 1000 @Confuze#1359 cash",
 	options: [
 		{
 			type: ApplicationCommandOptionTypes.SUB_COMMAND,
@@ -66,11 +68,10 @@ const command: Command = {
 		}
 	],
 	async execute(i, client) {
-		// const embed = new MessageEmbed();
 		const subcommand = i.options.getSubcommand(true);
 		const amount = i.options.getInteger("amount", true);
 		const user = i.options.getUser("user", true);
-		const target = i.options.getString("target", false);
+		const target = i.options.getString("target", false)?.toLowerCase();
 		const userModel = await User.findOne({ userId: user.id, guildId: i.guildId });
 		if (!userModel) newUser(i.guild!, user);
 
@@ -96,7 +97,7 @@ const command: Command = {
 				userModel.cash = userModel.cash + amount;
 				embed.addField("Cel", "Gotówka");
 			} else {
-				i.reply({ content: "Niepoprawne użycie komendy", ephemeral: true }); // TODO: Make this an embed and show the user what they did worng + correct syntax - probably gonna make some sort of handler for this
+				return i.reply({ embeds: [syntaxEmbed("Podałeś zły cel dodania pieniędzy (cash/bank) - sprawdź literówki", i, this)], ephemeral: true }); 
 			}
 
 			embed.setTitle(`Pomyślnie dodano pieniądze`);
@@ -109,7 +110,7 @@ const command: Command = {
 				userModel.bank = userModel.bank - amount >= 0 ? userModel.bank - amount : 0;
 				embed.addField("Cel", "Bank");
 			} else {
-				i.reply({ content: "Niepoprawne użycie komendy", ephemeral: true }); // TODO: Same as above
+				return i.reply({ embeds: [syntaxEmbed("Podałeś zły cel dodania pieniędzy (cash/bank) - sprawdź literówki", i, this)], ephemeral: true });
 			}
 
 			embed.setTitle(`Pomyślnie zabrano pieniądze`);

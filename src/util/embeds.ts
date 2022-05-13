@@ -1,4 +1,6 @@
-import { ColorResolvable } from "discord.js";
+import { ColorResolvable, CommandInteraction, Interaction, User } from "discord.js";
+import { MessageEmbed } from "discord.js";
+import Command from "../structures/command";
 
 interface ColorObj {
 	[keys: string]: ColorResolvable;
@@ -10,4 +12,31 @@ const embedColors: ColorObj = {
 	failure: "#D13D23"
 };
 
-export { embedColors };
+const syntaxEmbed = (description: string, i:CommandInteraction, command:Command) => {
+	let options = [];
+	for (const option of i.options.data[0].options!) {
+		options.push(option.value)
+	}
+	
+	return new MessageEmbed({
+			author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
+			description: description,
+			color: embedColors.failure,
+			fields: [
+				{
+					name: "Twoje użycie",
+					value: `\`\`\`\n${i.toString()}\n\`\`\``
+				},
+				{
+					name: "Poprawne użycie",
+					value: `\`\`\`\n${command.usage}\n\`\`\``
+				},
+				{
+					name: "Przykładowe użycie",
+					value: `\`\`\`\n${command.exampleUsage}\n\`\`\``
+				}
+			]
+	});
+};
+
+export { embedColors, syntaxEmbed };

@@ -7,6 +7,8 @@ const command: Command = {
 	category: "GENERAL",
 	type: "CHAT_INPUT",
 	defaultPermission: true,
+	usage: "/ping",
+	exampleUsage: "/ping",
 	execute(i, client) {
 		const embed = new MessageEmbed({
 			title: "Wszystko działa!",
