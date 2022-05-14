@@ -3,6 +3,7 @@ import Command from "../../structures/command";
 import User from "../../models/user";
 import { embedColors, syntaxEmbed } from "../../util/embeds";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { newUser } from "../../util/db";
 
 const command: Command = {
 	name: "top",
@@ -21,7 +22,8 @@ const command: Command = {
 				"Pokazuje tabelę z najbogatszymi graczami pod względem gotówki lub pieniędzy w banku"
 		}
 	],
-	async execute(i, client) {
+	async execute(i, client) { // TODO: make a multiple page system with custom buttons
+		if (!(User.findOne({ userId: i.user.id, guildId: i.guildId }))) newUser(i.guild!, i.user)
 		const leaderboard = await User.find(
 			{ guildId: i.guildId },
 			"userId cash bank"
@@ -43,12 +45,16 @@ const command: Command = {
 		console.log(target);
 		const embed = new MessageEmbed({
 			author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
-			description: `Oto tabela z najbogatszymi graczami sortując po: ${targetString}`,
+			description: `Oto tabela z najbogatszymi graczami sortując po: **${targetString}**`,
 			color: embedColors.info,
 			fields: [
 				{
 					name: "Tabela",
 					value: leaderboardString
+				},
+                {
+					name: "Twoje miejsce w tabeli",
+					value: `\`\``
 				}
 			]
 		});
