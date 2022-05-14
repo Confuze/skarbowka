@@ -7,7 +7,7 @@
     "start": "node ./build/index.js",
     "dev": "nodemon ./src/index.ts",
     "build": "tsc",
-    "lint": "eslint ./src/index.ts"
+    "lint": "eslint ./"
   },
   "keywords": [
     "discord",
@@ -19,10 +19,14 @@
   "license": "GPL-3.0",
   "dependencies": {
     "discord.js": "^13.5.0",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "mongoose": "^6.3.3"
   },
   "repository": "github:Confuze/skarbowka",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "@typescript-eslint/parser": "^5.23.0",
+    "eslint": "^8.15.0",
     "nodemon": "^2.0.15",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4"
