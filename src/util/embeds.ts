@@ -1,4 +1,4 @@
-import { ColorResolvable, CommandInteraction, Interaction, User } from "discord.js";
+import { ColorResolvable, CommandInteraction } from "discord.js";
 import { MessageEmbed } from "discord.js";
 import Command from "../structures/command";
 

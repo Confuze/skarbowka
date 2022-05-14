@@ -15,7 +15,7 @@ const client = new Client({
 	intents: [Intents.FLAGS.GUILDS]
 });
 
-let commands: any = [];
+const commands: Command[] | any[] = [];
 
 const eventFiles = readdirSync(__dirname + "/events").filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
 

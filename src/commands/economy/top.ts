@@ -22,20 +22,20 @@ const command: Command = {
 				"Pokazuje tabelę z najbogatszymi graczami pod względem gotówki lub pieniędzy w banku"
 		}
 	],
-	async execute(i, client) { // TODO: make a multiple page system with custom buttons
+	async execute(i) { // TODO: make a multiple page system with custom buttons
 		if (!(User.findOne({ userId: i.user.id, guildId: i.guildId }))) newUser(i.guild!, i.user)
 		const leaderboard = await User.find(
 			{ guildId: i.guildId },
 			"userId cash bank"
 		).limit(10);
-		let leaderboardString: string = "";
+		let leaderboardString = "";
 		const target = i.options.getString("from", false)?.toLowerCase();
-        let targetString:string =  "gotówka i bank (razem)";
+        let targetString =  "gotówka i bank (razem)";
         if (target === "cash") { targetString = "gotówka" } 
         else if (target === "bank") { targetString = "bank" }
         else if (target) { return i.reply({ embeds: [syntaxEmbed("Podałeś niepoprawny argument - sprawdź literówki", i, this)] })}
 
-        leaderboard.forEach((user:any, index:any) => { // TODO: Clear this any type hell
+        leaderboard.forEach((user, index:number) => { // TODO: Clear this any type hell
             let amount;
             if (target === "cash") { amount = user.cash } 
             else if (target === "bank") { amount = user.bank }

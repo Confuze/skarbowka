@@ -67,7 +67,7 @@ const command: Command = {
 			]
 		}
 	],
-	async execute(i, client) {
+	async execute(i) {
 		const subcommand = i.options.getSubcommand(true);
 		const amount = i.options.getInteger("amount", true);
 		const user = i.options.getUser("user", true);

@@ -1,7 +1,5 @@
 import Event from "../structures/event";
-import { readdirSync } from "fs";
 import { commands, client } from "../index";
-import Command from "../structures/command";
 
 const event: Event = {
 	name: "ready",
