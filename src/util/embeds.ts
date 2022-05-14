@@ -13,11 +13,6 @@ const embedColors: ColorObj = {
 };
 
 const syntaxEmbed = (description: string, i:CommandInteraction, command:Command) => {
-	let options = [];
-	for (const option of i.options.data[0].options!) {
-		options.push(option.value)
-	}
-	
 	return new MessageEmbed({
 			author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
 			description: description,
