@@ -15,6 +15,13 @@ const command: Command = {
 	usage: "/dice <liczba (od 1 do 6)> <obstawiana kwota>",
 	exampleUsage: "/dice 4 100",
 	options: [
+        {
+			type: ApplicationCommandOptionTypes.NUMBER,
+            required: true,
+            min_value: 1,
+			name: "amount",
+			description: "Kwota, którą chcesz obstawić"
+		},
 		{
 			type: ApplicationCommandOptionTypes.NUMBER,
             required: true,
@@ -22,13 +29,6 @@ const command: Command = {
             max_value: 6,
 			name: "number",
 			description: "Liczba, którą obstawiasz, że zostanie wylosowana (od 1 do 6)"
-		},
-        {
-			type: ApplicationCommandOptionTypes.NUMBER,
-            required: true,
-            min_value: 1,
-			name: "amount",
-			description: "Kwota, którą chcesz obstawić"
 		}
 	],
 	async execute(i) {
@@ -84,12 +84,12 @@ const command: Command = {
 
         if (number === rolled) {
             embed.setDescription("Gratulacje! udało ci się zgadnąć liczbę, i otrzymujesz poczwórną stawkę zakładu.")
-            embed.addField("Nagroda", `\`💰 ${amount * 2}\``)
+            embed.addField("Nagroda", `\`💰 ${amount * 3}\``)
             embed.setColor(embedColors.success)
             userDocument.cash += amount * 4;
         } else {
             embed.setDescription("Niestety nie udało ci się zgadnąć liczby. Powodzenia następnym razem.")
-            embed.addField("Nagroda", `\`💰 0\``)
+            embed.addField("Nagroda", `\`💰 ${-amount}\``)
             embed.setColor(embedColors.failure)
         }
 
