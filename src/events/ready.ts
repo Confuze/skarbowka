@@ -1,7 +1,6 @@
 import Event from "../structures/event";
-import { readdirSync } from "fs";
 import { commands, client } from "../index";
-import Command from "../structures/command";
+import { ClientApplication, Guild } from "discord.js";
 
 const event: Event = {
 	name: "ready",
@@ -9,11 +8,11 @@ const event: Event = {
 	async execute() {
 		console.log("Logged in to discord");
 
-		let target: any;
+		let target: Guild | ClientApplication;
 		if (process.env.TESTING_SERVER) {
-			target = client.guilds.cache.get(process.env.TESTING_SERVER);
+			target = client.guilds.cache.get(process.env.TESTING_SERVER)!;
 		} else {
-			target = client.application;
+			target = client.application!;
 		}
 
 		target.commands.set(commands);

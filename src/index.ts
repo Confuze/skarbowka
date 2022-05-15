@@ -4,12 +4,19 @@ dotenv.config();
 import { readdirSync } from "fs";
 import Command from "./structures/command";
 import Event from "./structures/event";
+import mongoose from "mongoose";
+
+mongoose
+	.connect(`mongodb+srv://confuze:${process.env.MONGO_PWD}@skarbowka.zbnnn.mongodb.net/skarbowka?retryWrites=true&w=majority`)
+	.then(() => console.log("Connected to the database"))
+	.catch((err) => console.log(err));
 
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS]
 });
 
-let commands: any = [];
+// eslint-disable-next-line
+const commands: Command[] | any[] = [];
 
 const eventFiles = readdirSync(__dirname + "/events").filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
 
@@ -37,6 +44,9 @@ for (const folder of commandFolders) {
 	})();
 }
 
-export { commands, client };
+client.on("error", (err) => { console.log(err.message) });
+client.on("warn", (info) => { console.log(info) });
 
 client.login(process.env.TOKEN);
+
+export { commands, client };
