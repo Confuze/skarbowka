@@ -21,18 +21,19 @@ const event: Event = {
 
 		if (command.permissions && !permissionsArray.some((perm) => command.permissions?.includes(perm))) {
 			const embed = new MessageEmbed({
+				author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
 				title: "Brak uprawnień!",
 				description: "Nie posiadasz uprawnień do użycia tej komendy",
 				color: embedColors.failure,
 				fields: [{ name: "Wymagane uprawnienia", value: command.permissions.map((perm) => `\`${perm}\``).join(", ") }]
 			});
-			embed.setColor(embedColors.failure);
 			i.reply({ embeds: [embed], ephemeral: true });
 			return;
 		}
 
-		if (command.devOnly && i.user.id != "469425967845343233") {
+		if (command.devOnly && i.user.id != process.env.OWNER_ID) {
 			const embed = new MessageEmbed({
+				author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
 				title: "Brak uprawnień!",
 				description: "Ta komenda jest dostępna tylko dla właściciela bota",
 				color: embedColors.failure
@@ -47,9 +48,28 @@ const event: Event = {
 		if (!userDocument && command.category === "ECONOMY") await newUser(i.guild!, i.user);
 
 		try {
-			command.execute(i, client, i.options);
+			await command.execute(i, client, i.options);
 		} catch (err) {
-			console.error(err);
+			console.error(err)
+			let errorMessage = err;
+			if (err instanceof Error) errorMessage = err.message || " "; // If the error message is empty it sets it to " " so the code block is rendered and not left as 6 backticks
+
+			const embed = new MessageEmbed({
+				author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
+				title: "COŚ POSZŁO NIE TAK :/",
+				description: "Wystąpił nieoczekiwany błąd po stronie serwera, przepraszamy",
+				color: embedColors.failure,
+				fields: [
+					{
+						name: "Błąd:",
+						value: `\`\`\`${errorMessage}\`\`\``
+					}
+				]
+			})
+
+			i.reply({ embeds: [embed] })
+
+			client.users.cache.get(process.env.OWNER_ID!)!.send(`Wystąpił nieoczekiwany błąd w kanale ${i.channel} na serwerze ${i.guild}\n\`\`\`${errorMessage}\`\`\``);
 		}
 	}
 };

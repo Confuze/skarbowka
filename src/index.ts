@@ -44,6 +44,9 @@ for (const folder of commandFolders) {
 	})();
 }
 
-export { commands, client };
+client.on("error", (err) => { console.log(err.message) });
+client.on("warn", (info) => { console.log(info) });
 
 client.login(process.env.TOKEN);
+
+export { commands, client };
