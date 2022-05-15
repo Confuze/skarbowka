@@ -30,7 +30,7 @@ const command: Command = {
 
 		if (!(UserModel.findOne({ userId: user.id, guildId: i.guildId }))) newUser(i.guild!, user);
 
-		const userDocument = await UserModel.findOne({ userId: user.id, guildId: i.guildId });
+		const userDocument = (await UserModel.findOne({ userId: user.id, guildId: i.guildId }))!;
 
 		const embed = new MessageEmbed({
 			author: { name: user.tag, icon_url: user.avatarURL()! },
@@ -39,18 +39,19 @@ const command: Command = {
 			fields: [
 				{
 					name: "Gotówka",
-					value: `\`💰 ${userDocument.cash.toString()}\`` // TODO: Use a cooler format - 0,000 instead of 0 (no idea how to do that)
+					value: `\`💰 ${userDocument.cash}\`` // TODO: Use a cooler format - 0,000 instead of 0 (no idea how to do that)
 				},
 				{
 					name: "Bank",
-					value: `\`💰 ${userDocument.bank.toString()}\``
+					value: `\`💰 ${userDocument.bank}\``
 				},
 				{
 					name: "Suma",
-					value: `\`💰 ${(userDocument.cash + userDocument.bank).toString()}\``
+					value: `\`💰 ${userDocument.cash + userDocument.bank }\``
 				}
 			]
 		});
+
 		i.reply({
 			embeds: [embed]
 		});

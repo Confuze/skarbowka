@@ -33,7 +33,7 @@ const command: Command = {
 	],
 	async execute(i) {
         if (!(User.findOne({ userId: i.user.id, guildId: i.guildId }))) newUser(i.guild!, i.user);
-        const userDocument = await User.findOne({ userId: i.user.id, guildId: i.guildId });
+        const userDocument = (await User.findOne({ userId: i.user.id, guildId: i.guildId }))!;
 
         const number = i.options.getNumber("number", true);
 		const amount = i.options.getNumber("amount", true);

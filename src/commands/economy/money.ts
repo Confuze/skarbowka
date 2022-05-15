@@ -72,7 +72,7 @@ const command: Command = {
 		const amount = i.options.getInteger("amount", true);
 		const user = i.options.getUser("user", true);
 		const target = i.options.getString("target", false)?.toLowerCase();
-		const userModel = await User.findOne({ userId: user.id, guildId: i.guildId });
+		const userModel = (await User.findOne({ userId: user.id, guildId: i.guildId }))!;
 		if (!userModel) newUser(i.guild!, user);
 
 		const embed = new MessageEmbed({

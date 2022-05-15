@@ -15,6 +15,7 @@ const client = new Client({
 	intents: [Intents.FLAGS.GUILDS]
 });
 
+// eslint-disable-next-line
 const commands: Command[] | any[] = [];
 
 const eventFiles = readdirSync(__dirname + "/events").filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
