@@ -1,6 +1,6 @@
 import { MessageEmbed } from "discord.js";
 import Command from "../../structures/command";
-import User from "../../models/user";
+import UserModel from "../../models/user";
 import { embedColors, syntaxEmbed } from "../../util/embeds";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { newUser } from "../../util/db";
@@ -23,9 +23,9 @@ const command: Command = {
 		}
 	],
 	async execute(i) { // TODO: make a multiple page system with custom buttons
-		if (!(User.findOne({ userId: i.user.id, guildId: i.guildId }))) newUser(i.guild!, i.user)
+		if (!(UserModel.findOne({ userId: i.user.id, guildId: i.guildId }))) newUser(i.guild!, i.user)
 
-		const leaderboard = await User.find(
+		const leaderboard = await UserModel.find(
 			{ guildId: i.guildId },
 			"userId cash bank"
 		).limit(10);

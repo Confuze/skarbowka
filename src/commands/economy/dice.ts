@@ -1,6 +1,6 @@
 import { MessageEmbed } from "discord.js";
 import Command from "../../structures/command";
-import User from "../../models/user";
+import UserModel from "../../models/user";
 import { embedColors } from "../../util/embeds";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { newUser } from "../../util/db";
@@ -13,7 +13,7 @@ const command: Command = {
 	type: "CHAT_INPUT",
 	defaultPermission: true,
 	usage: "/dice <liczba (od 1 do 6)> <obstawiana kwota>",
-	exampleUsage: "/dice 4 100",
+	exampleUsage: "/dice 100 4",
 	options: [
         {
 			type: ApplicationCommandOptionTypes.NUMBER,
@@ -32,11 +32,11 @@ const command: Command = {
 		}
 	],
 	async execute(i) {
-        if (!(User.findOne({ userId: i.user.id, guildId: i.guildId }))) newUser(i.guild!, i.user);
-        const userDocument = (await User.findOne({ userId: i.user.id, guildId: i.guildId }))!;
+        if (!(UserModel.findOne({ userId: i.user.id, guildId: i.guildId }))) newUser(i.guild!, i.user);
+        const userDocument = (await UserModel.findOne({ userId: i.user.id, guildId: i.guildId }))!;
 
-        const number = i.options.getNumber("number", true);
 		const amount = i.options.getNumber("amount", true);
+        const number = i.options.getNumber("number", true);
 
         if (userDocument.cash < amount) { 
             const embed = new MessageEmbed({

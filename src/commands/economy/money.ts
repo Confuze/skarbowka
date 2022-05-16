@@ -1,6 +1,6 @@
 import { MessageEmbed } from "discord.js";
 import Command from "../../structures/command";
-import User from "../../models/user";
+import UserModel from "../../models/user";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { newUser } from "../../util/db";
 import { embedColors, syntaxEmbed } from "../../util/embeds";
@@ -72,8 +72,8 @@ const command: Command = {
 		const amount = i.options.getInteger("amount", true);
 		const user = i.options.getUser("user", true);
 		const target = i.options.getString("target", false)?.toLowerCase();
-		const userModel = (await User.findOne({ userId: user.id, guildId: i.guildId }))!;
-		if (!userModel) newUser(i.guild!, user);
+		const userDocument = (await UserModel.findOne({ userId: user.id, guildId: i.guildId }))!;
+		if (!userDocument) newUser(i.guild!, user);
 
 		const embed = new MessageEmbed({
 			fields: [
@@ -81,40 +81,40 @@ const command: Command = {
 					name: "Użytkownik",
 					value: `<@${user.id}> / **${user.tag}** / \`${user.id}\``
 				},
-				{
-					name: "Kwota",
-					value: `\`${amount} 💰\``
-				}
 			],
 			color: embedColors.success
 		});
 
 		if (subcommand === "add") {
 			if (!target || target === "bank") {
-				userModel.bank = userModel.bank + amount;
+				userDocument.bank += amount;
 				embed.addField("Cel", "Bank");
 			} else if (target === "cash") {
-				userModel.cash = userModel.cash + amount;
+				userDocument.cash += amount;
 				embed.addField("Cel", "Gotówka");
 			} else {
 				return i.reply({ embeds: [syntaxEmbed("Podałeś zły cel dodania pieniędzy (cash/bank) - sprawdź literówki", i, this)], ephemeral: true }); 
 			}
 
+			embed.addField("Kwota", `\`💰 ${amount}\``)
 			embed.setTitle(`Pomyślnie dodano pieniądze`);
-			userModel.save();
+			userDocument.save();
 		} else if (subcommand === "take") {
+			const  withdrawn = userDocument.bank - amount >= 0 ? amount : userDocument.bank;
+
 			if (!target || target === "cash") {
-				userModel.cash = userModel.cash - amount >= 0 ? userModel.cash - amount : 0;
+				userDocument.cash -= withdrawn;
 				embed.addField("Cel", "Gotówka");
 			} else if (target === "bank") {
-				userModel.bank = userModel.bank - amount >= 0 ? userModel.bank - amount : 0;
+				userDocument.bank -= withdrawn;
 				embed.addField("Cel", "Bank");
 			} else {
 				return i.reply({ embeds: [syntaxEmbed("Podałeś zły cel dodania pieniędzy (cash/bank) - sprawdź literówki", i, this)], ephemeral: true });
 			}
 
+			embed.addField("Kwota", `\`💰 ${withdrawn}\``)
 			embed.setTitle(`Pomyślnie zabrano pieniądze`);
-			userModel.save();
+			userDocument.save();
 		}
 
 		i.reply({
