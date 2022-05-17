@@ -7,29 +7,29 @@ import { newUser } from "../../util/db";
 
 const command: Command = {
 	name: "dep",
-	description: "Wypłać pieniądze z banku do gotówki",
+	description: "Wpłać pieniądze z gotówki do banku",
 	category: "ECONOMY",
 	guildOnly: true,
 	type: "CHAT_INPUT",
 	defaultPermission: true,
-	usage: "/with <kwota do wypłacenia>",
-	exampleUsage: "/with 500",
+	usage: "/with <kwota do wpłacenia>",
+	exampleUsage: "/dep 500",
 	options: [
         {
 			type: ApplicationCommandOptionTypes.NUMBER,
             required: true,
             min_value: 1,
 			name: "amount",
-			description: "Kwota, którą chcesz wyłacić"
+			description: "Kwota, którą chcesz wpłacić"
 		}
 	],
 	async execute(i) {
         const amount = i.options.getNumber("amount")!;
 		if (!(UserModel.findOne({ userId: i.user.id, guildId: i.guildId }))) newUser(i.guild!, i.user);
 		const userDocument = (await UserModel.findOne({ userId: i.user.id, guildId: i.guildId }))!;
-        const withdrawn = userDocument.bank - amount >= 0 ? amount : userDocument.bank;
-		userDocument.bank -= userDocument.bank - withdrawn;
-        userDocument.cash += withdrawn
+        const deposited = userDocument.cash - amount >= 0 ? amount : userDocument.cash;
+		userDocument.cash -= deposited;
+        userDocument.bank += deposited
         userDocument.save()
 
 		const embed = new MessageEmbed({
@@ -39,7 +39,7 @@ const command: Command = {
 			fields: [
 				{
 					name: "Wypłacona kwota",
-					value: `\`💰 ${withdrawn}\``
+					value: `\`💰 ${deposited}\``
 				},
                 {
 					name: "Gotówka",
