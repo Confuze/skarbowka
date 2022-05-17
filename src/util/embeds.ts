@@ -14,6 +14,7 @@ const embedColors: ColorObj = {
 
 const syntaxEmbed = (description: string, i:CommandInteraction, command:Command) => {
 	return new MessageEmbed({
+			title: "Niepoprawne użycie komendy!",
 			author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
 			description: description,
 			color: embedColors.failure,
