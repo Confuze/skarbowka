@@ -47,9 +47,9 @@ const command: Command = {
 			description: "Zabiera pieniądze z gotówki/banku",
 			options: [
 				{
-					type: ApplicationCommandOptionTypes.INTEGER,
+					type: ApplicationCommandOptionTypes.STRING,
 					name: "amount",
-					description: "Kwota do zabrania",
+					description: "Kwota do zabrania lub 'all', aby zabrać wszystko",
 					required: true,
 					min_value: 1
 				},
@@ -69,7 +69,6 @@ const command: Command = {
 	],
 	async execute(i) {
 		const subcommand = i.options.getSubcommand(true);
-		const amount = i.options.getInteger("amount", true);
 		const user = i.options.getUser("user", true);
 		const target = i.options.getString("target", false)?.toLowerCase();
 		const userDocument = (await UserModel.findOne({ userId: user.id, guildId: i.guildId }))!;
@@ -86,6 +85,8 @@ const command: Command = {
 		});
 
 		if (subcommand === "add") {
+			const amount = i.options.getInteger("amount", true);
+
 			if (!target || target === "bank") {
 				userDocument.bank += amount;
 				embed.addField("Cel", "Bank");
@@ -100,19 +101,25 @@ const command: Command = {
 			embed.setTitle(`Pomyślnie dodano pieniądze`);
 			userDocument.save();
 		} else if (subcommand === "take") {
-			const  withdrawn = userDocument.bank - amount >= 0 ? amount : userDocument.bank;
+			const amount = i.options.getString("amount", true);
+			let taken:number = 0;
+			if (amount !== "all" && !(parseInt(amount) > 0)) i.reply({embeds: [syntaxEmbed("Podałeś złą kwotę - podaj liczbę całkowitą większą od 0, lub 'all'.", i, this)]})
 
 			if (!target || target === "cash") {
-				userDocument.cash -= withdrawn;
+				if (amount === "all") taken = userDocument.cash
+				else if (parseInt(amount) > 0) taken = userDocument.cash - parseInt(amount) >= 0 ? parseInt(amount) : userDocument.cash;
+				userDocument.cash -= taken;
 				embed.addField("Cel", "Gotówka");
 			} else if (target === "bank") {
-				userDocument.bank -= withdrawn;
+				if (amount === "all") taken = userDocument.bank
+				else if (parseInt(amount) > 0) taken = userDocument.bank - parseInt(amount) >= 0 ? parseInt(amount) : userDocument.bank;
+				userDocument.bank -= taken;
 				embed.addField("Cel", "Bank");
 			} else {
 				return i.reply({ embeds: [syntaxEmbed("Podałeś zły cel dodania pieniędzy (cash/bank) - sprawdź literówki", i, this)], ephemeral: true });
 			}
 
-			embed.addField("Kwota", `\`💰 ${withdrawn}\``)
+			embed.addField("Kwota", `\`💰 ${taken}\``)
 			embed.setTitle(`Pomyślnie zabrano pieniądze`);
 			userDocument.save();
 		}

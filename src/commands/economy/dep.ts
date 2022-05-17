@@ -1,7 +1,7 @@
 import { MessageEmbed } from "discord.js";
 import Command from "../../structures/command";
 import UserModel from "../../models/user";
-import { embedColors } from "../../util/embeds";
+import { embedColors, syntaxEmbed } from "../../util/embeds";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { newUser } from "../../util/db";
 
@@ -16,21 +16,25 @@ const command: Command = {
 	exampleUsage: "/dep 500",
 	options: [
         {
-			type: ApplicationCommandOptionTypes.NUMBER,
+			type: ApplicationCommandOptionTypes.STRING,
             required: true,
-            min_value: 1,
 			name: "amount",
 			description: "Kwota, którą chcesz wpłacić"
 		}
 	],
 	async execute(i) {
-        const amount = i.options.getNumber("amount")!;
+        const amount = i.options.getString("amount")!;
 		if (!(UserModel.findOne({ userId: i.user.id, guildId: i.guildId }))) newUser(i.guild!, i.user);
 		const userDocument = (await UserModel.findOne({ userId: i.user.id, guildId: i.guildId }))!;
-        const deposited = userDocument.cash - amount >= 0 ? amount : userDocument.cash;
+
+        let deposited:number = 0;
+		if (amount === "all") deposited = userDocument.cash
+		else if (parseInt(amount) > 0) deposited = userDocument.cash - parseInt(amount) >= 0 ? parseInt(amount) : userDocument.cash;
+		else return i.reply({embeds: [syntaxEmbed("Podałeś złą kwotę - podaj liczbę całkowitą większą od 0, lub 'all'.", i, this)]})
+
 		userDocument.cash -= deposited;
-        userDocument.bank += deposited
-        userDocument.save()
+        userDocument.bank += deposited;
+        userDocument.save();
 
 		const embed = new MessageEmbed({
 			author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
