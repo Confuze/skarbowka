@@ -18,6 +18,8 @@
     ],
     "rules": {
 		"@typescript-eslint/no-non-null-assertion": "off",
-        "@typescript-eslint/no-explicit-any": ["warn", { "ignoreRestArgs": true }]
+        "@typescript-eslint/no-explicit-any": ["warn", { "ignoreRestArgs": true }],
+        "semi": "off", // eslint's default semi rule combined with typescript's one reports incorrect errors, thus it must be turned off
+        "@typescript-eslint/semi": ["warn"]
 	}
 }
