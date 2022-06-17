@@ -44,8 +44,8 @@ for (const folder of commandFolders) {
 	})();
 }
 
-client.on("error", (err) => { console.log(err.message) });
-client.on("warn", (info) => { console.log(info) });
+client.on("error", (err) => { console.log(err.message); });
+client.on("warn", (info) => { console.log(info); });
 
 client.login(process.env.TOKEN);
 

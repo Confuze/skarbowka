@@ -3,7 +3,6 @@ import Command from "../../structures/command";
 import UserModel from "../../models/user";
 import { embedColors, syntaxEmbed } from "../../util/embeds";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { newUser } from "../../util/db";
 
 const command: Command = {
 	name: "with",
@@ -24,13 +23,12 @@ const command: Command = {
 	],
 	async execute(i) {
         const amount = i.options.getString("amount")!;
-		if (!(UserModel.findOne({ userId: i.user.id, guildId: i.guildId }))) newUser(i.guild!, i.user);
-		const userDocument = (await UserModel.findOne({ userId: i.user.id, guildId: i.guildId }))!;
-		
-		let withdrawn:number = 0;
-		if (amount === "all") withdrawn = userDocument.bank
+		const userDocument = await UserModel.quickFind(i.user.id, i.guildId!);
+
+		let withdrawn = 0;
+		if (amount === "all") withdrawn = userDocument.bank;
 		else if (parseInt(amount) > 0) withdrawn = userDocument.bank - parseInt(amount) >= 0 ? parseInt(amount) : userDocument.bank;
-		else return i.reply({embeds: [syntaxEmbed("Podałeś złą kwotę - podaj liczbę całkowitą większą od 0, lub 'all'.", i, this)]})
+		else return i.reply({embeds: [syntaxEmbed("Podałeś złą kwotę - podaj liczbę całkowitą większą od 0, lub 'all'.", i, this)]});
 
 		userDocument.bank -= withdrawn;
         userDocument.cash += withdrawn;

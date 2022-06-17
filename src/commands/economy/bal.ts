@@ -1,9 +1,8 @@
-import { MessageEmbed, User } from "discord.js";
+import { MessageEmbed } from "discord.js";
 import Command from "../../structures/command";
 import UserModel from "../../models/user";
 import { embedColors } from "../../util/embeds";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { newUser } from "../../util/db";
 
 const command: Command = {
 	name: "bal",
@@ -23,14 +22,10 @@ const command: Command = {
 	],
 	async execute(i) {
 		const mention = i.options.getUser("user");
-		let user: User;
-
+		let user = i.user;
 		if (mention) user = mention;
-		else user = i.user;
 
-		if (!(UserModel.findOne({ userId: user.id, guildId: i.guildId }))) newUser(i.guild!, user);
-
-		const userDocument = (await UserModel.findOne({ userId: user.id, guildId: i.guildId }))!;
+		const userDocument = await UserModel.quickFind(user.id, i.guildId!);
 
 		const embed = new MessageEmbed({
 			author: { name: user.tag, icon_url: user.avatarURL()! },
@@ -47,7 +42,7 @@ const command: Command = {
 				},
 				{
 					name: "Suma",
-					value: `\`💰 ${userDocument.cash + userDocument.bank }\``
+					value: `\`💰 ${userDocument.sum}\``
 				}
 			]
 		});

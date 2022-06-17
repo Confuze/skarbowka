@@ -2,7 +2,6 @@ import { MessageEmbed } from "discord.js";
 import Command from "../../structures/command";
 import UserModel from "../../models/user";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { newUser } from "../../util/db";
 import { embedColors, syntaxEmbed } from "../../util/embeds";
 
 const command: Command = {
@@ -70,9 +69,8 @@ const command: Command = {
 	async execute(i) {
 		const subcommand = i.options.getSubcommand(true);
 		const user = i.options.getUser("user", true);
+		const userDocument = await UserModel.quickFind(user.id, i.guildId!);
 		const target = i.options.getString("target", false)?.toLowerCase();
-		const userDocument = (await UserModel.findOne({ userId: user.id, guildId: i.guildId }))!;
-		if (!userDocument) newUser(i.guild!, user);
 
 		const embed = new MessageEmbed({
 			fields: [
@@ -84,7 +82,7 @@ const command: Command = {
 			color: embedColors.success
 		});
 
-		if (subcommand === "add") {
+		if (subcommand === "add") { // This could be made a bit less spaghetti-like but I decided to leave it for now as I currently don't have any ideas for it
 			const amount = i.options.getInteger("amount", true);
 
 			if (!target || target === "bank") {
@@ -97,32 +95,32 @@ const command: Command = {
 				return i.reply({ embeds: [syntaxEmbed("Podałeś zły cel dodania pieniędzy (cash/bank) - sprawdź literówki", i, this)], ephemeral: true }); 
 			}
 
-			embed.addField("Kwota", `\`💰 ${amount}\``)
+			embed.addField("Kwota", `\`💰 ${amount}\``);
 			embed.setTitle(`Pomyślnie dodano pieniądze`);
-			userDocument.save();
 		} else if (subcommand === "take") {
 			const amount = i.options.getString("amount", true);
-			let taken:number = 0;
-			if (amount !== "all" && !(parseInt(amount) > 0)) i.reply({embeds: [syntaxEmbed("Podałeś złą kwotę - podaj liczbę całkowitą większą od 0, lub 'all'.", i, this)]})
+			let taken = 0;
+			if (amount !== "all" && !(parseInt(amount) > 0)) return i.reply({embeds: [syntaxEmbed("Podałeś złą kwotę - podaj liczbę całkowitą większą od 0, lub 'all'.", i, this)]});
 
 			if (!target || target === "cash") {
-				if (amount === "all") taken = userDocument.cash
-				else if (parseInt(amount) > 0) taken = userDocument.cash - parseInt(amount) >= 0 ? parseInt(amount) : userDocument.cash;
+				if (amount === "all") taken = userDocument.cash;
+				else taken = parseInt(amount);
 				userDocument.cash -= taken;
 				embed.addField("Cel", "Gotówka");
 			} else if (target === "bank") {
-				if (amount === "all") taken = userDocument.bank
-				else if (parseInt(amount) > 0) taken = userDocument.bank - parseInt(amount) >= 0 ? parseInt(amount) : userDocument.bank;
+				if (amount === "all") taken = userDocument.bank;
+				else taken = parseInt(amount);
 				userDocument.bank -= taken;
 				embed.addField("Cel", "Bank");
 			} else {
 				return i.reply({ embeds: [syntaxEmbed("Podałeś zły cel dodania pieniędzy (cash/bank) - sprawdź literówki", i, this)], ephemeral: true });
 			}
 
-			embed.addField("Kwota", `\`💰 ${taken}\``)
+			embed.addField("Kwota", `\`💰 ${taken}\``);
 			embed.setTitle(`Pomyślnie zabrano pieniądze`);
-			userDocument.save();
 		}
+
+		userDocument.save();
 
 		i.reply({
 			embeds: [embed]

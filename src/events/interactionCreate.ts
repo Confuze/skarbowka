@@ -2,8 +2,6 @@ import { GuildMember, Interaction, MessageEmbed } from "discord.js";
 import { commands, client } from "../index";
 import Command from "../structures/command";
 import Event from "../structures/event";
-import User from "../models/user";
-import { newUser } from "../util/db";
 import { embedColors } from "../util/embeds";
 
 const event: Event = {
@@ -15,7 +13,7 @@ const event: Event = {
 			return cmd.name == i.commandName;
 		});
 
-		if (!i.guild && command.guildOnly) return;
+		if (!i.guild && command.guildOnly) return; // TODO: Make a message saying the command is allowed only in servers
 
 		const permissionsArray = (i.member as GuildMember).permissionsIn(i.channel!.id).toArray();
 
@@ -27,8 +25,7 @@ const event: Event = {
 				color: embedColors.failure,
 				fields: [{ name: "Wymagane uprawnienia", value: command.permissions.map((perm) => `\`${perm}\``).join(", ") }]
 			});
-			i.reply({ embeds: [embed], ephemeral: true });
-			return;
+			return i.reply({ embeds: [embed], ephemeral: true });
 		}
 
 		if (command.devOnly && i.user.id != process.env.OWNER_ID) {
@@ -39,18 +36,13 @@ const event: Event = {
 				color: embedColors.failure
 			});
 
-			i.reply({ embeds: [embed], ephemeral: true });
-			return;
+			return i.reply({ embeds: [embed], ephemeral: true });
 		}
-
-		const userDocument = await User.findOne({ userId: i.user.id, guildId: i.guildId });
-
-		if (!userDocument && command.category === "ECONOMY") await newUser(i.guild!, i.user);
 
 		try {
 			await command.execute(i, client, i.options);
 		} catch (err) {
-			console.error(err)
+			console.error(err);
 			let errorMessage = err;
 			if (err instanceof Error) errorMessage = err.message || " "; // If the error message is empty it sets it to " " so the code block is rendered and not left as 6 backticks
 
@@ -65,9 +57,9 @@ const event: Event = {
 						value: `\`\`\`${errorMessage}\`\`\``
 					}
 				]
-			})
+			});
 
-			i.reply({ embeds: [embed] })
+			i.reply({ embeds: [embed] });
 
 			client.users.cache.get(process.env.OWNER_ID!)!.send(`Wystąpił nieoczekiwany błąd w kanale ${i.channel} na serwerze ${i.guild}\n\`\`\`${errorMessage}\`\`\``);
 		}

@@ -3,7 +3,6 @@ import Command from "../../structures/command";
 import UserModel from "../../models/user";
 import { embedColors } from "../../util/embeds";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { newUser } from "../../util/db";
 
 const command: Command = {
 	name: "dice",
@@ -32,30 +31,29 @@ const command: Command = {
 		}
 	],
 	async execute(i) {
-        if (!(UserModel.findOne({ userId: i.user.id, guildId: i.guildId }))) newUser(i.guild!, i.user);
-        const userDocument = (await UserModel.findOne({ userId: i.user.id, guildId: i.guildId }))!;
+		const userDocument = await UserModel.quickFind(i.user.id, i.guildId!);
 
 		const amount = i.options.getNumber("amount", true);
         const number = i.options.getNumber("number", true);
 
         if (userDocument.cash < amount) { 
-            const embed = new MessageEmbed({
-            author: { 
-                name: i.user.tag,icon_url: i.user.avatarURL()!
-            },
-            title: `Nie posiadasz wystarczającej kwoty w gotówce!`,
-            fields: [
-                {
-                    name: "Twoja gotówka",
-                    value: `\`💰 ${userDocument.cash}\``
+                const embed = new MessageEmbed({
+                author: { 
+                    name: i.user.tag,icon_url: i.user.avatarURL()!
                 },
-                {
-                    name: "Obstawiona kwota (za duża)",
-                    value: `\`💰 ${amount}\``
-                }
-            ]
-        })
-            return i.reply({ embeds: [embed], ephemeral: true})
+                title: `Nie posiadasz wystarczającej kwoty w gotówce!`,
+                fields: [
+                    {
+                        name: "Twoja gotówka",
+                        value: `\`💰 ${userDocument.cash}\``
+                    },
+                    {
+                        name: "Obstawiona kwota (za duża)",
+                        value: `\`💰 ${amount}\``
+                    }
+                ]
+            });
+            return i.reply({ embeds: [embed], ephemeral: true});
         } else if (amount < 100) {
             const embed = new MessageEmbed({
                 author: { 
@@ -68,8 +66,8 @@ const command: Command = {
                         value: `\`💰 ${amount}\``
                     }
                 ]
-            })
-            return i.reply({ embeds: [embed], ephemeral: true})
+            });
+            return i.reply({ embeds: [embed], ephemeral: true});
         }
 
         const rolled = Math.floor(Math.random() * 7);
@@ -77,20 +75,20 @@ const command: Command = {
 
         const embed = new MessageEmbed({
             author: { 
-                name: i.user.tag,icon_url: i.user.avatarURL()!
+                name: i.user.tag, icon_url: i.user.avatarURL()!
             },
             title: `\\🎲 Wylosowana liczba: ${rolled}`
-        })
+        });
 
         if (number === rolled) {
-            embed.setDescription("Gratulacje! udało ci się zgadnąć liczbę, i otrzymujesz poczwórną stawkę zakładu.")
-            embed.addField("Nagroda", `\`💰 ${amount * 3}\``)
-            embed.setColor(embedColors.success)
+            embed.setDescription("Gratulacje! udało ci się zgadnąć liczbę, i otrzymujesz poczwórną stawkę zakładu.");
+            embed.addField("Nagroda", `\`💰 ${amount * 3}\``);
+            embed.setColor(embedColors.success);
             userDocument.cash += amount * 4;
         } else {
-            embed.setDescription("Niestety nie udało ci się zgadnąć liczby. Powodzenia następnym razem.")
-            embed.addField("Nagroda", `\`💰 ${-amount}\``)
-            embed.setColor(embedColors.failure)
+            embed.setDescription("Niestety nie udało ci się zgadnąć liczby. Powodzenia następnym razem.");
+            embed.addField("Nagroda", `\`💰 ${-amount}\``);
+            embed.setColor(embedColors.failure);
         }
 
         userDocument.save();

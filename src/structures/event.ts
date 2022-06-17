@@ -4,4 +4,4 @@ interface Event {
     execute(...args:any[]): void
 }
 
-export default Event
+export default Event;
