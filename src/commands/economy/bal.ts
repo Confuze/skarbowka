@@ -7,7 +7,6 @@ import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 const command: Command = {
 	name: "bal",
 	description: "Pokazuje ilość pieniędzy oraz miejsce w tabeli",
-	category: "ECONOMY",
 	guildOnly: true,
 	type: "CHAT_INPUT",
 	defaultPermission: true,

@@ -7,7 +7,6 @@ import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 const command: Command = {
 	name: "dice",
 	description: "Rzut kośćmi. Obstaw daną liczbę i jeśli ona wypadnie, dostaniesz pieniądze.",
-	category: "ECONOMY",
 	guildOnly: true,
 	type: "CHAT_INPUT",
 	defaultPermission: true,

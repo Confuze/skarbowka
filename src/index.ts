@@ -38,6 +38,7 @@ for (const folder of commandFolders) {
 	(async () => {
 		for (const file of commandFiles) {
 			const command = (await import(__dirname + `/commands/${folder}/${file}`)).default as Command;
+			command.category = folder;
 
 			commands.push(command);
 		}

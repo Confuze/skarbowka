@@ -9,7 +9,6 @@ import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 const command: Command = {
 	name: "top",
 	description: "Pokazuje tabelę z najbogatszymi graczami",
-	category: "ECONOMY",
 	guildOnly: true,
 	type: "CHAT_INPUT",
 	defaultPermission: true,

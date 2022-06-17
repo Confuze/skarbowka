@@ -10,7 +10,7 @@ import {
 interface Command {
 	name: string;
 	description: string;
-	category: "GENERAL" | "ECONOMY" | "ADMIN"; // TODO: make it so it automaticalaly adds a category based on the folder (seems easy but I'm too lazy now)
+	category?: string;
 	permissions?: PermissionString[];
 	devOnly?: boolean;
 	moderatorOnly?: boolean; // TODO: add moderator role adding and checking

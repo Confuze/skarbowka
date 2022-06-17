@@ -7,7 +7,6 @@ import { embedColors, syntaxEmbed } from "../../util/embeds";
 const command: Command = {
 	name: "money",
 	description: "Dodaje lub zabiera pieniądze do banku/gotówki użytkownika",
-	category: "ECONOMY",
 	permissions: ["ADMINISTRATOR"],
 	guildOnly: true,
 	type: "CHAT_INPUT",

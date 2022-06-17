@@ -4,7 +4,6 @@ import Command from "../../structures/command";
 const command: Command = {
 	name: "ping",
 	description: "Komenda testowa do sprawdzenia działalności bota",
-	category: "GENERAL",
 	type: "CHAT_INPUT",
 	defaultPermission: true,
 	usage: "/ping",

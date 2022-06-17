@@ -7,7 +7,6 @@ import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 const command: Command = {
 	name: "with",
 	description: "Wypłać pieniądze z banku do gotówki",
-	category: "ECONOMY",
 	guildOnly: true,
 	type: "CHAT_INPUT",
 	defaultPermission: true,

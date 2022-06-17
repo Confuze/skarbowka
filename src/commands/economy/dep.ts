@@ -7,7 +7,6 @@ import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 const command: Command = {
 	name: "dep",
 	description: "Wpłać pieniądze z gotówki do banku",
-	category: "ECONOMY",
 	guildOnly: true,
 	type: "CHAT_INPUT",
 	defaultPermission: true,
