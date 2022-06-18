@@ -1,5 +1,3 @@
-// ! Ignore this, it will be reworked
-
 import { MessageEmbed } from "discord.js";
 import Command from "../../structures/command";
 import UserModel from "../../models/user";
@@ -19,64 +17,82 @@ const command: Command = {
 			type: ApplicationCommandOptionTypes.STRING,
 			name: "from",
 			description:
-				"Pokazuje tabelę z najbogatszymi graczami pod względem gotówki lub pieniędzy w banku"
+				"Wybierz, pod względem czego ma być sortowana tabel: cash/bank/both (domyślnie both)"
 		}
 	],
 	async execute(i) {
 		// TODO: make a multiple page system with custom buttons
 		const target = i.options.getString("from", false)?.toLowerCase();
-		if (!target) {
-			const leaderboard = await UserModel.find(
-				{ guildId: i.guildId },
-				"userId cash bank"
-			)
-				.sort("-cash -bank")
-				.limit(10);
+		const documents = UserModel.aggregate().match({ guildId: i.guildId });
+		let targetString = "";
+		let leaderboardString = "";
 
-			console.log(leaderboard);
+		if (!target || target === "both") {
+			targetString = "Gotówka i bank (razem)";
+			documents.project({
+				"userId": 1,
+				"cash": 1,
+				"bank": 1,
+				"value": { "$add": ["$cash", "$bank"] }
+			});
+		} else if (target === "cash") {
+			targetString = "Gotówka";
+			documents.project({
+				"userId": 1,
+				"cash": 1,
+				"value": "$cash"
+			});
+		} else if (target === "bank") {
+			targetString = "Bank";
+			documents.project({
+				"userId": 1,
+				"bank": 1,
+				"value": "$bank"
+			});
+		} else {
+			return i.reply({
+				embeds: [
+					syntaxEmbed(
+						'Podałeś złą wartość argumentu "from" (cash/bank/both) - sprawdź literówki.',
+						i,
+						this
+					)
+				],
+				ephemeral: true
+			});
 		}
 
-		// const leaderboard = await UserModel.find(
-		// 	{ guildId: i.guildId },
-		// 	"userId cash bank"
-		// );
-		// let leaderboardString = "";
-		// const target = i.options.getString("from", false)?.toLowerCase();
-		// let targetString =  "gotówka i bank (razem)";
-		// if (target === "cash") { targetString = "gotówka" }
-		// else if (target === "bank") { targetString = "bank" }
-		// else if (target) { return i.reply({ embeds: [syntaxEmbed("Podałeś niepoprawny argument - sprawdź literówki", i, this)] })}
-		// leaderboard.sort((a, b) => {
-		// 	let amount;
-		// 	if (target === "cash") { amount = a.user.cash }
-		// 	else if (target === "bank") { amount = user.bank }
-		// 	else { amount = user.cash + user.bank }
-		// 	return 0;
-		// })
-		// leaderboard.forEach((user, index:number) => {
-		// 	let amount;
-		// 	if (target === "cash") { amount = user.cash }
-		// 	else if (target === "bank") { amount = user.bank }
-		// 	else { amount = user.cash + user.bank }
-		// 	leaderboardString += `${index + 1}. <@${user.userId}>: \`💰 ${amount}\`\n`
-		// });
-		// const embed = new MessageEmbed({
-		// 	author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
-		// 	description: `Oto tabela z najbogatszymi graczami sortując po: **${targetString}**`,
-		// 	color: embedColors.info,
-		// 	fields: [
-		// 		{
-		// 			name: "Tabela",
-		// 			value: leaderboardString
-		// 		},
-		// 		{
-		// 			name: "Twoje miejsce w tabeli",
-		// 			value: `\`\``
-		// 		}
-		// 	]
-		// });
+		documents.sort("-value").limit(100);
+		let place: number | string = "100+";
+
+		for (const [index, document] of (await documents).entries()) {
+			if (i.user.id === document.userId) {
+				place = index + 1 + ".";
+			}
+
+			leaderboardString += `${index + 1}. <@${document.userId}>: \`💰 ${
+				document.value
+			}\`\n`;
+		}
+
+		const embed = new MessageEmbed({
+			author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
+			description: `Oto tabela z najbogatszymi graczami sortując po: **${targetString}**`,
+			color: embedColors.info,
+			fields: [
+				{
+					name: "Twoje miejsce w tabeli",
+					value: `\`${place}\``
+				},
+				{
+					name: "Tabela",
+					value: leaderboardString
+				}
+			]
+		});
+
 		i.reply({
-			content: "test"
+			embeds: [embed]
 		});
 	}
 };
