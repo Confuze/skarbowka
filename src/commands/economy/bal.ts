@@ -26,9 +26,26 @@ const command: Command = {
 
 		const userDocument = await UserModel.quickFind(user.id, i.guildId!);
 
+		const documents = UserModel.aggregate()
+			.match({ guildId: i.guildId })
+			.project({
+				"userId": 1,
+				"cash": 1,
+				"bank": 1,
+				"value": { "$add": ["$cash", "$bank"] }
+			})
+			.sort("-value")
+			.limit(100);
+		let place: number | string = "100+";
+		for (const [index, document] of (await documents).entries()) {
+			if (user.id === document.userId) {
+				place = index + 1 + ".";
+			}
+		}
+
 		const embed = new MessageEmbed({
 			author: { name: user.tag, icon_url: user.avatarURL()! },
-			description: `Miejsce w tablicy wyników: \`kiedyś dodam\`\n Użyj \`/top\` dla pełnej tabeli`, // TODO: Make a leaderboard system (should be easy)
+			description: `Miejsce w tablicy wyników: \`${place}\`\n Użyj \`/top\` dla pełnej tabeli`,
 			color: embedColors.info,
 			fields: [
 				{
