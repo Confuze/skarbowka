@@ -35,7 +35,7 @@ const command: Command = {
 				{
 					type: ApplicationCommandOptionTypes.STRING,
 					name: "target",
-					description: "Bank/gotówka (domyślnie gotówka)"
+					description: "Bank/gotówka (domyślnie bank)"
 				}
 			]
 		},
@@ -76,12 +76,13 @@ const command: Command = {
 				{
 					name: "Użytkownik",
 					value: `<@${user.id}> / **${user.tag}** / \`${user.id}\``
-				},
+				}
 			],
 			color: embedColors.success
 		});
 
-		if (subcommand === "add") { // This could be made a bit less spaghetti-like but I decided to leave it for now as I currently don't have any ideas for it
+		if (subcommand === "add") {
+			// This could be made a bit less spaghetti-like but I decided to leave it for now as I currently don't have any ideas for it
 			const amount = i.options.getInteger("amount", true);
 
 			if (!target || target === "bank") {
@@ -91,7 +92,16 @@ const command: Command = {
 				userDocument.cash += amount;
 				embed.addField("Cel", "Gotówka");
 			} else {
-				return i.reply({ embeds: [syntaxEmbed("Podałeś zły cel dodania pieniędzy (cash/bank) - sprawdź literówki", i, this)], ephemeral: true }); 
+				return i.reply({
+					embeds: [
+						syntaxEmbed(
+							"Podałeś zły cel dodania pieniędzy (cash/bank) - sprawdź literówki",
+							i,
+							this
+						)
+					],
+					ephemeral: true
+				});
 			}
 
 			embed.addField("Kwota", `\`💰 ${amount}\``);
@@ -99,7 +109,16 @@ const command: Command = {
 		} else if (subcommand === "take") {
 			const amount = i.options.getString("amount", true);
 			let taken = 0;
-			if (amount !== "all" && !(parseInt(amount) > 0)) return i.reply({embeds: [syntaxEmbed("Podałeś złą kwotę - podaj liczbę całkowitą większą od 0, lub 'all'.", i, this)]});
+			if (amount !== "all" && !(parseInt(amount) > 0))
+				return i.reply({
+					embeds: [
+						syntaxEmbed(
+							"Podałeś złą kwotę - podaj liczbę całkowitą większą od 0, lub 'all'.",
+							i,
+							this
+						)
+					]
+				});
 
 			if (!target || target === "cash") {
 				if (amount === "all") taken = userDocument.cash;
@@ -112,7 +131,16 @@ const command: Command = {
 				userDocument.bank -= taken;
 				embed.addField("Cel", "Bank");
 			} else {
-				return i.reply({ embeds: [syntaxEmbed("Podałeś zły cel dodania pieniędzy (cash/bank) - sprawdź literówki", i, this)], ephemeral: true });
+				return i.reply({
+					embeds: [
+						syntaxEmbed(
+							"Podałeś zły cel dodania pieniędzy (cash/bank) - sprawdź literówki",
+							i,
+							this
+						)
+					],
+					ephemeral: true
+				});
 			}
 
 			embed.addField("Kwota", `\`💰 ${taken}\``);

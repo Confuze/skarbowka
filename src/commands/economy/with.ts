@@ -13,36 +13,50 @@ const command: Command = {
 	usage: "/with <kwota do wypłacenia>",
 	exampleUsage: "/with 500",
 	options: [
-        {
+		{
 			type: ApplicationCommandOptionTypes.STRING,
-            required: true,
+			required: true,
 			name: "amount",
-			description: "Kwota, którą chcesz wypłacić, lub 'all' dla wypłacenia wszystkiego"
+			description:
+				"Kwota, którą chcesz wypłacić, lub 'all' dla wypłacenia wszystkiego"
 		}
 	],
 	async execute(i) {
-        const amount = i.options.getString("amount")!;
+		const amount = i.options.getString("amount")!;
 		const userDocument = await UserModel.quickFind(i.user.id, i.guildId!);
 
 		let withdrawn = 0;
 		if (amount === "all") withdrawn = userDocument.bank;
-		else if (parseInt(amount) > 0) withdrawn = userDocument.bank - parseInt(amount) >= 0 ? parseInt(amount) : userDocument.bank;
-		else return i.reply({embeds: [syntaxEmbed("Podałeś złą kwotę - podaj liczbę całkowitą większą od 0, lub 'all'.", i, this)]});
+		else if (parseInt(amount) > 0)
+			withdrawn =
+				userDocument.bank - parseInt(amount) >= 0
+					? parseInt(amount)
+					: userDocument.bank;
+		else
+			return i.reply({
+				embeds: [
+					syntaxEmbed(
+						"Podałeś złą kwotę - podaj liczbę całkowitą większą od 0, lub 'all'.",
+						i,
+						this
+					)
+				]
+			});
 
 		userDocument.bank -= withdrawn;
-        userDocument.cash += withdrawn;
-        userDocument.save();
+		userDocument.cash += withdrawn;
+		userDocument.save();
 
 		const embed = new MessageEmbed({
 			author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
-            title: "Pomyślnie wypłacono pieniądze.",
+			title: "Pomyślnie wypłacono pieniądze.",
 			color: embedColors.success,
 			fields: [
 				{
 					name: "Wypłacona kwota",
 					value: `\`💰 ${withdrawn}\``
 				},
-                {
+				{
 					name: "Gotówka",
 					value: `\`💰 ${userDocument.cash}\``
 				},

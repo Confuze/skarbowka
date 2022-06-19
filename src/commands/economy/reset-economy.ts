@@ -63,18 +63,18 @@ const command: Command = {
 
 				btnInteraction.reply({ embeds: [embed2] });
 				i.editReply({
-					content: "Potwierdzono resetowanie ekonomi",
+					content: "Potwierdzono resetowanie ekonomi.",
 					embeds: [],
 					components: []
 				});
 
 				await UserModel.updateMany(
 					{ guildId: i.guildId },
-					{ cash: 0, bank: 0 }
+					{ cash: 0, bank: 0, inventory: { scratchcards: 0 } } // TODO: Make this dynamic
 				);
 			} else {
 				i.editReply({
-					content: "Anulowano resetowanie ekonomi",
+					content: "Anulowano resetowanie ekonomi.",
 					embeds: [],
 					components: []
 				});
