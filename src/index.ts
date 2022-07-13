@@ -5,6 +5,7 @@ import { readdirSync } from "fs";
 import Command from "./structures/command";
 import Event from "./structures/event";
 import mongoose from "mongoose";
+import Cooldown from "./structures/cooldown";
 
 mongoose
 	.connect(`mongodb+srv://confuze:${process.env.MONGO_PWD}@skarbowka.zbnnn.mongodb.net/skarbowka?retryWrites=true&w=majority`)
@@ -17,6 +18,8 @@ const client = new Client({
 
 // eslint-disable-next-line
 const commands: Command[] | any[] = [];
+
+const cooldowns: Cooldown[] = [];
 
 const eventFiles = readdirSync(__dirname + "/events").filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
 
@@ -50,4 +53,4 @@ client.on("warn", (info) => { console.log(info); });
 
 client.login(process.env.TOKEN);
 
-export { commands, client };
+export { commands, client, cooldowns };

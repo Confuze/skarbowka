@@ -12,6 +12,10 @@ interface Command {
 	description: string;
 	category?: string;
 	permissions?: PermissionString[];
+	cooldown?: {
+		time: number,
+		uses?: number
+	};
 	devOnly?: boolean;
 	moderatorOnly?: boolean; // TODO: add moderator role adding and checking
 	requiredRoles?: string[]; // TODO: add required roles adding and checking

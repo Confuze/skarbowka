@@ -1,5 +1,5 @@
 import { GuildMember, Interaction, MessageEmbed } from "discord.js";
-import { commands, client } from "../index";
+import { commands, client, cooldowns } from "../index";
 import Command from "../structures/command";
 import Event from "../structures/event";
 import { embedColors } from "../util/embeds";
@@ -37,6 +37,33 @@ const event: Event = {
 			});
 
 			return i.reply({ embeds: [embed], ephemeral: true });
+		}
+
+		if (command.cooldown) {
+			const cooldown = cooldowns.find((cooldown) => cooldown.userId === i.user.id && cooldown.guildId === i.guildId && cooldown.commandName === command.name);
+			const cooldownTime = command.cooldown.time * 1000;
+
+			if (cooldown && cooldown.timesUsed === command.cooldown.uses && cooldown.lastUsed + cooldownTime > Date.now()) {
+				const timeLeft = cooldown.lastUsed + cooldownTime - Date.now();
+				const embed = new MessageEmbed({
+					author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
+					title: "Limit czasowy!",
+					description: `Ta komenda posiada limit użyć, zaczekaj jeszcze \`${Math.floor(timeLeft / 1000 / 60 / 60)} godzin ${Math.floor(timeLeft / 1000 / 60)} minut ${Math.floor(timeLeft / 1000)} sekund\``,
+					color: embedColors.failure
+				});
+				return i.reply({ embeds: [embed], ephemeral: true });
+			} else if (cooldown) {
+				cooldown.timesUsed += 1; // ! Possible issue: If an user uses a command incorrectly and gets an error embed, it still counts as a use
+			} else {
+				cooldowns.push({
+					userId: i.user.id,
+					guildId: i.guildId!,
+					commandName: command.name,
+					timesUsed: 1,
+					lastUsed: Date.now()
+				});
+			}
+
 		}
 
 		try {

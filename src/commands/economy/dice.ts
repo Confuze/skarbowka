@@ -9,6 +9,10 @@ const command: Command = {
 	description:
 		"Rzut kośćmi. Obstaw daną liczbę i jeśli ona wypadnie, dostaniesz pieniądze.",
 	guildOnly: true,
+	cooldown: {
+		time: 5 * 60,
+		uses: 20
+	},
 	type: "CHAT_INPUT",
 	defaultPermission: true,
 	usage: "/dice <liczba (od 1 do 6)> <obstawiana kwota>",
@@ -19,7 +23,7 @@ const command: Command = {
 			required: true,
 			min_value: 1,
 			name: "amount",
-			description: "Kwota, którą chcesz obstawić"
+			description: "Kwota, którą chcesz obstawić (minimalnie 100)"
 		},
 		{
 			type: ApplicationCommandOptionTypes.NUMBER,
@@ -69,7 +73,8 @@ const command: Command = {
 						name: "Obstawiona kwota (za mała)",
 						value: `\`💰 ${amount}\``
 					}
-				]
+				],
+				color: embedColors.failure
 			});
 			return i.reply({ embeds: [embed], ephemeral: true });
 		}
