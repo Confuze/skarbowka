@@ -13,28 +13,33 @@ interface Prize {
 const prizes: Prize[] = [
 	{
 		emote: "🎟️",
-		chance: 0.2,
+		chance: 0.15,
 		reward: "Pięć darmowych losów"
 	},
 	{
 		emote: "🍒",
 		reward: 500,
-		chance: 0.3
+		chance: 0.4
 	},
 	{
 		emote: "💵",
 		reward: 2000,
-		chance: 0.2
+		chance: 0.15
+	},
+	{
+		emote: "💷",
+		reward: 5000,
+		chance: 0.15
 	},
 	{
 		emote: "🎊",
 		reward: 10000,
-		chance: 0.2
+		chance: 0.10
 	},
 	{
 		emote: "💎",
 		reward: 50000,
-		chance: 0.1
+		chance: 0.05
 	}
 ];
 
@@ -47,7 +52,7 @@ function pickPrize() {
 		if (threshold > winner) {
 			return prize;
 		}
-	}
+	} 
 }
 
 const command: Command = {
@@ -95,7 +100,7 @@ const command: Command = {
 				fields: [
 					{
 						name: "Tabela",
-						value: "```💎💎💎 - 50000\n🎊🎊🎊 - 10000\n💵💵💵 - 2000\n🍒🍒🍒 - 500\n🎟️🎟️🎟️ - 5 darmowych zdrapek\n```"
+						value: "```💎💎💎 - 50000\n💎💎   - 20000\n🎊🎊🎊 - 10000\n💷💷💷 - 5000\n🎊🎊   - 4000\n💷💷 -   2000\n💵💵💵 - 2000\n💵💵   - 800\n🍒🍒🍒 - 500\n🍒🍒   - 200\n🎟️🎟️🎟️ - 5 darmowych zdrapek```"
 					},
 					{
 						name: "Ilość twoich zdrapek",
@@ -192,26 +197,62 @@ const command: Command = {
 
 			await i.reply({ embeds: [embed1] });
 			let embed2: MessageEmbed;
+			let reward: string;
+
+			// ! WARNING: You are entering the land of spaghetti code. The following lines are really crappy but I am too lazy and uncompetent to fix this. Beware of redundance and bad practices!
 
 			if (prize1 === prize2 && prize1 === prize3) {
-				let reward: string;
-				if (typeof prize1.reward === "string") {
+				if (prize1.reward === "🎟️") {
 					userDocument.inventory.scratchcards += 5;
 					reward = prize1.reward;
-				} else {
+				} else if (typeof prize1.reward === "number") {
 					userDocument.cash += prize1.reward;
 					reward = `\`${prize1.reward} 💰\``;
 				}
 				userDocument.save();
 
 				embed2 = new MessageEmbed({
-					title: "Gratulacje, wygrałeś nagrodę!",
+					title: "Gratulacje, wygrałeś nagrodę główną!",
 					description:
-						"Wylosowałeś trzy jednakowe znaki w zdrapce, co gwarantuje wygraną.",
+						"Wylosowałeś trzy jednakowe znaki w zdrapce, co gwarantuje ci wygraną.",
 					fields: [
 						{
 							name: "Nagroda",
-							value: reward
+							value: reward!
+						}
+					],
+					color: embedColors.success
+				});
+			} else if ((prize1 === prize2 && typeof prize1.reward === "number") || (prize1 === prize3 && typeof prize1.reward === "number")) {
+				userDocument.cash += prize1.reward * 0.4;
+				userDocument.save();
+
+				reward = `\`${prize1.reward * 0.4} 💰\``;
+				embed2 = new MessageEmbed({
+					title: "Gratulacje, wygrałeś nagrodę poboczną!",
+					description:
+						"Wylosowałeś dwa jednakowe znaki w zdrapce, co gwarantuje ci wygraną.",
+					fields: [
+						{
+							name: "Nagroda",
+							value: reward!
+						}
+					],
+					color: embedColors.success
+				});
+			} else if (prize2 === prize3 && typeof prize2.reward === "number") {
+				userDocument.cash += prize2.reward * 0.4;
+				userDocument.save();
+
+				reward = `\`${prize2.reward * 0.4} 💰\``;
+				embed2 = new MessageEmbed({
+					title: "Gratulacje, wygrałeś nagrodę poboczną!",
+					description:
+						"Wylosowałeś dwa jednakowe znaki w zdrapce, co gwarantuje ci wygraną.",
+					fields: [
+						{
+							name: "Nagroda",
+							value: reward!
 						}
 					],
 					color: embedColors.success
@@ -220,7 +261,7 @@ const command: Command = {
 				embed2 = new MessageEmbed({
 					title: "Niestet nie wygrałeś nagrody",
 					description:
-						"Twoja zdrapka posiadała różne znaki, co oznacza brak wygranej. Powodzenia następnym razem.",
+						"Twoja zdrapka nie posiadała wygranego wzoru. Powodzenia następnym razem.",
 					color: embedColors.failure
 				});
 			}
