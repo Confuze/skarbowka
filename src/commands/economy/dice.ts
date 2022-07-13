@@ -3,6 +3,7 @@ import Command from "../../structures/command";
 import UserModel from "../../models/user";
 import { embedColors } from "../../util/embeds";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import updateCooldown from "../../util/cooldowns";
 
 const command: Command = {
 	name: "dice",
@@ -11,7 +12,7 @@ const command: Command = {
 	guildOnly: true,
 	cooldown: {
 		time: 5 * 60,
-		uses: 20
+		uses: 10
 	},
 	type: "CHAT_INPUT",
 	defaultPermission: true,
@@ -35,7 +36,7 @@ const command: Command = {
 				"Liczba, którą obstawiasz, że zostanie wylosowana (od 1 do 6)"
 		}
 	],
-	async execute(i) {
+	async execute(i, _client, cooldown) {
 		const userDocument = await UserModel.quickFind(i.user.id, i.guildId!);
 
 		const amount = i.options.getNumber("amount", true);
@@ -81,6 +82,7 @@ const command: Command = {
 
 		const rolled = Math.floor(Math.random() * 7);
 		userDocument.cash -= amount;
+		updateCooldown(cooldown);
 
 		const embed = new MessageEmbed({
 			author: {

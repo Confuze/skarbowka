@@ -3,9 +3,9 @@ import {
 	ApplicationCommandType,
 	Client,
 	CommandInteraction,
-	Options,
 	PermissionString
 } from "discord.js";
+import Cooldown from "./cooldown";
 
 interface Command {
 	name: string;
@@ -25,7 +25,7 @@ interface Command {
 	options?: ApplicationCommandOptionData[];
 	usage: string;
 	exampleUsage: string;
-	execute(i: CommandInteraction, client: Client, options?: Options): void;
+	execute(i: CommandInteraction, client: Client, cooldown: Cooldown): void;
 }
 
 export default Command;

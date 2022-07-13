@@ -39,8 +39,8 @@ const event: Event = {
 			return i.reply({ embeds: [embed], ephemeral: true });
 		}
 
+		let cooldown = cooldowns.find((cooldown) => cooldown.userId === i.user.id && cooldown.guildId === i.guildId && cooldown.commandName === command.name);
 		if (command.cooldown) {
-			const cooldown = cooldowns.find((cooldown) => cooldown.userId === i.user.id && cooldown.guildId === i.guildId && cooldown.commandName === command.name);
 			const cooldownTime = command.cooldown.time * 1000;
 
 			if (cooldown && cooldown.timesUsed === (command.cooldown.uses || 1) && cooldown.lastUsed + cooldownTime > Date.now()) {
@@ -48,27 +48,24 @@ const event: Event = {
 				const embed = new MessageEmbed({
 					author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
 					title: "Limit czasowy!",
-					description: `Ta komenda posiada limit użyć, zaczekaj jeszcze \`${Math.floor(timeLeft / 1000 / 60 / 60)} godzin ${Math.floor(timeLeft / 1000 / 60)} minut ${Math.floor(timeLeft / 1000 % 60)} sekund\``,
+					description: `Ta komenda posiada limit użyć, zaczekaj jeszcze \`${Math.floor(timeLeft / 1000 / 60 / 60)} godzin ${Math.floor(timeLeft / 1000 / 60 % 60)} minut ${Math.floor(timeLeft / 1000 % 60)} sekund\``,
 					color: embedColors.failure
 				});
 				return i.reply({ embeds: [embed], ephemeral: true });
-			} else if (cooldown) {
-				cooldown.lastUsed = Date.now();
-				cooldown.timesUsed += 1; // ! Possible issue: If an user uses a command incorrectly and gets an error embed, it still counts as a use
-			} else {
-				cooldowns.push({
+			} else if (!cooldown) {
+				cooldown = cooldowns[cooldowns.push({
 					userId: i.user.id,
 					guildId: i.guildId!,
 					commandName: command.name,
-					timesUsed: 1,
+					timesUsed: 0,
 					lastUsed: Date.now()
-				});
-			}
+				}) - 1]; // array.push returns the new length of the array so you can substract it by one to get the index of the pushed element
+			} // the lastUsed and timesUsed properties are not modified here but rather passed onto the command's execute funtion - this is done so that they can be changed only if the user actually used the command and not misspelled an option or used an irrelevant subcommand
 
 		}
 
 		try {
-			await command.execute(i, client, i.options);
+			await command.execute(i, client, cooldown!);
 		} catch (err) {
 			console.error(err);
 			let errorMessage = err;

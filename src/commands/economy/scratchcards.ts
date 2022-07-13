@@ -3,6 +3,7 @@ import Command from "../../structures/command";
 import UserModel from "../../models/user";
 import { embedColors } from "../../util/embeds";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import updateCooldown from "../../util/cooldowns";
 
 interface Prize {
 	emote: string;
@@ -58,6 +59,10 @@ function pickPrize() {
 const command: Command = {
 	name: "scratchcards",
 	description: "Zdrapki",
+	cooldown: {
+		time: 5 * 60,
+		uses: 15
+	},
 	guildOnly: true,
 	type: "CHAT_INPUT",
 	defaultPermission: true,
@@ -88,7 +93,7 @@ const command: Command = {
 			description: "Uzyskaj informacje na temat systemu zdrapek"
 		}
 	],
-	async execute(i) {
+	async execute(i, _client, cooldown) {
 		const subcommand = i.options.getSubcommand(true);
 		const userDocument = await UserModel.quickFind(i.user.id, i.guildId!);
 
@@ -174,6 +179,7 @@ const command: Command = {
 
 			userDocument.inventory.scratchcards -= 1;
 			userDocument.save();
+			updateCooldown(cooldown);
 
 			const prize1 = pickPrize()!;
 			const prize2 = pickPrize()!;

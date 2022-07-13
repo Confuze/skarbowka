@@ -15,7 +15,7 @@ const command: Command = {
 	exampleUsage: "/work",
 	async execute(i) {
         const userDocument = await UserModel.quickFind(i.user.id, i.guildId!);
-        const reward = Math.floor(Math.random() * 250) + 101;
+        const reward = Math.floor(Math.random() * 251) + 100;
 
         userDocument.cash += reward;
         userDocument.save();
