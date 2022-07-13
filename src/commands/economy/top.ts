@@ -1,4 +1,10 @@
-import { MessageEmbed } from "discord.js";
+import {
+	MessageActionRow,
+	MessageEmbed,
+	MessageButton,
+	ButtonInteraction,
+	InteractionReplyOptions
+} from "discord.js";
 import Command from "../../structures/command";
 import UserModel from "../../models/user";
 import { embedColors, syntaxEmbed } from "../../util/embeds";
@@ -21,11 +27,10 @@ const command: Command = {
 		}
 	],
 	async execute(i) {
-		// TODO: make a multiple page system with custom buttons
 		const target = i.options.getString("from", false)?.toLowerCase();
 		const documents = UserModel.aggregate().match({ guildId: i.guildId });
 		let targetString = "";
-		let leaderboardString = "";
+		const leaderboard: string[] = [];
 
 		if (!target || target === "both") {
 			targetString = "Gotówka i bank (razem)";
@@ -64,36 +69,115 @@ const command: Command = {
 
 		documents.sort("-value").limit(100);
 		let place: number | string = "100+";
+		let page = "";
+		let pageIndex = 0;
 
 		for (const [index, document] of (await documents).entries()) {
 			if (i.user.id === document.userId) {
 				place = index + 1 + ".";
 			}
 
-			leaderboardString += `${index + 1}. <@${document.userId}>: \`💰 ${
+			page += `${index + 1}. <@${document.userId}>: \`💰 ${
 				document.value
 			}\`\n`;
+
+			if (
+				(index != 0 && (index + 1) % 10 === 0) ||
+				index + 1 === (await documents).length
+			) {
+				leaderboard.push(page);
+				page = "";
+			}
 		}
 
-		const embed = new MessageEmbed({
-			author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
-			description: `Oto tabela z najbogatszymi graczami sortując po: **${targetString}**`,
-			color: embedColors.info,
-			fields: [
-				{
-					name: "Twoje miejsce w tabeli",
-					value: `\`${place}\``
-				},
-				{
-					name: "Tabela",
-					value: leaderboardString
-				}
-			]
+		const getReply = (): InteractionReplyOptions => {
+			const embed = new MessageEmbed({
+				author: { name: i.user.tag, icon_url: i.user.avatarURL()! },
+				description: `Oto tabela z najbogatszymi graczami sortując po: **${targetString}**`,
+				color: embedColors.info,
+				fields: [
+					{
+						name: "Twoje miejsce w tabeli",
+						value: `\`${place}\``
+					},
+					{
+						name: "Tabela",
+						value: leaderboard[pageIndex]
+					}
+				],
+				footer: { text: `Strona ${pageIndex + 1}/${leaderboard.length}` }
+			});
+
+			const row = new MessageActionRow()
+				.addComponents(
+					new MessageButton({
+						customId: "prev",
+						label: "Poprzednia strona",
+						style: "PRIMARY",
+						disabled: pageIndex === 0
+					})
+				)
+				.addComponents(
+					new MessageButton({
+						customId: "next",
+						label: "Następna strona",
+						style: "PRIMARY",
+						disabled: pageIndex + 1 === leaderboard.length
+					})
+				);
+
+			return {
+				embeds: [embed],
+				components: [row]
+			};
+		};
+
+		const filter = (btnInteraction: ButtonInteraction) => {
+			return btnInteraction.user.id === i.user.id;
+		};
+
+		const collector = i.channel!.createMessageComponentCollector({
+			time: 1000 * 60 * 15,
+			idle: 1000 * 60,
+			componentType: "BUTTON",
+			filter
 		});
 
-		i.reply({
-			embeds: [embed]
+		collector.on("collect", (btnInt) => {
+			btnInt.deferUpdate();
+
+			if (btnInt.customId === "prev") {
+				pageIndex--;
+			} else if (btnInt.customId === "next") {
+				pageIndex++;
+			}
+
+			i.editReply(getReply());
 		});
+
+		collector.on("end", () => {
+			const newRow = new MessageActionRow()
+				.addComponents(
+					new MessageButton({
+						customId: "prev",
+						label: "Poprzednia strona",
+						style: "PRIMARY",
+						disabled: true
+					})
+				)
+				.addComponents(
+					new MessageButton({
+						customId: "next",
+						label: "Następna strona",
+						style: "PRIMARY",
+						disabled: true
+					})
+				);
+
+			i.editReply({ components: [newRow] });
+		});
+
+		i.reply(getReply());
 	}
 };
 

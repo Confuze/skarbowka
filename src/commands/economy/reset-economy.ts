@@ -42,13 +42,14 @@ const command: Command = {
 			);
 
 		const filter = (btnInteraction: ButtonInteraction) => {
-			btnInteraction.user.id === i.user.id;
+			return btnInteraction.user.id === i.user.id;
 		}; // this is technically useless but I decided to implement it in case I would change the reply not to be ephemeral
 
 		const collector = i.channel!.createMessageComponentCollector({
 			componentType: "BUTTON",
 			max: 1,
-			time: 15000
+			time: 15000,
+			filter
 		});
 
 		collector.on("collect", async (btnInteraction) => {

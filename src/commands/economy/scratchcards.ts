@@ -4,6 +4,52 @@ import UserModel from "../../models/user";
 import { embedColors } from "../../util/embeds";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
+interface Prize {
+	emote: string;
+	chance: number;
+	reward: number | string;
+}
+
+const prizes: Prize[] = [
+	{
+		emote: "🎟️",
+		chance: 0.2,
+		reward: "Pięć darmowych losów"
+	},
+	{
+		emote: "🍒",
+		reward: 500,
+		chance: 0.3
+	},
+	{
+		emote: "💵",
+		reward: 2000,
+		chance: 0.2
+	},
+	{
+		emote: "🎊",
+		reward: 10000,
+		chance: 0.2
+	},
+	{
+		emote: "💎",
+		reward: 50000,
+		chance: 0.1
+	}
+];
+
+function pickPrize() {
+	const winner = Math.random();
+	let threshold = 0;
+
+	for (const prize of prizes) {
+		threshold += prize.chance;
+		if (threshold > winner) {
+			return prize;
+		}
+	}
+}
+
 const command: Command = {
 	name: "scratchcards",
 	description: "Zdrapki",
@@ -123,52 +169,6 @@ const command: Command = {
 
 			userDocument.inventory.scratchcards -= 1;
 			userDocument.save();
-
-			interface Prize {
-				emote: string;
-				chance: number;
-				reward: number | string;
-			}
-
-			const prizes: Prize[] = [
-				{
-					emote: "🎟️",
-					chance: 0.2,
-					reward: "Pięć darmowych losów"
-				},
-				{
-					emote: "🍒",
-					reward: 500,
-					chance: 0.3
-				},
-				{
-					emote: "💵",
-					reward: 2000,
-					chance: 0.2
-				},
-				{
-					emote: "🎊",
-					reward: 10000,
-					chance: 0.2
-				},
-				{
-					emote: "💎",
-					reward: 50000,
-					chance: 0.1
-				}
-			];
-
-			function pickPrize() {
-				const winner = Math.random();
-				let threshold = 0;
-
-				for (const prize of prizes) {
-					threshold += prize.chance;
-					if (threshold > winner) {
-						return prize;
-					}
-				}
-			}
 
 			const prize1 = pickPrize()!;
 			const prize2 = pickPrize()!;
