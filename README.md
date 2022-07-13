@@ -14,15 +14,39 @@ It's a discord bot that has economy and casino commands that you can use in case
 Hope u enjoy ;p
 
 
-### TODO LIST
-- [x] add handler
-- [x] add better handler
-- [ ] add even better handler
-- [x] add basic commands
-- [x] add basic economy
-- [ ] add cool economy
-- [ ] add even cooler economy
-- [ ] add cool handler
-- [ ] host the bot 24/7
-- [ ] make bot cool
-- [ ] make interaktiw dashbord (no, I'm not gonna do that)
+### What it's got
+- [x] A ping command (wow)
+- [x] Basic economy commands like /bal, /with, /dep
+- [x] Commands to add and take money from people as well as a command to reset the whole economy
+- [x] Stupid /dice command and a scratchcards system designed to fuel your gambling addiction
+- [x] A /rob command that lets you make people hate you
+- [x] A cool handler that works well (allegedly) with hadling events, commands, cooldowns, mongodb stuff and more!
+- [x] Spaghetti code and no tests because who neads those 🙃
+- [ ] A chat-to-earn system
+- [ ] More gambling commands
+- [ ] A shop system (maybe)
+- [ ] 24/7 hosting
+- [ ] Interaktiw dashbord (no, I will never do that)
+
+### How to contribute?
+That's the neat part, you don't. I mean why would you want to do that in the first place? But seriously, if you hit your head really hard in your childhood and now for some reason you do actually want to contribute, then feel free to. There are no rules, just create a pull request/issue and I'll make sure to review it as soon as possible (assuming I won't be a lazy bimbo and I won't just ignore it). However, I would really appreciate it if you could followed this project's code style. And uhhh... thanks for being weird enough to even consider contributing to this messy project.
+
+### How to deploy?
+Again, why would you? Anyways, here's a little guide:
+
+First, you must clone the project and cd into it:
+```
+git clone https://github.com/Confuze/skarbowka.git
+cd ./skarbowka
+```
+Then you have to install the necessary dependencies and build the typescript code
+```
+npm install
+npm run build
+```
+Finally, you just have to run it
+```
+npm start
+```
+
+###### I MIGHT automate all of this with docker someday
