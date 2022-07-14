@@ -22,14 +22,14 @@ Hope u enjoy ;p
 - [x] A /rob command that lets you make people hate you
 - [x] A cool handler that works well (allegedly) with hadling events, commands, cooldowns, mongodb stuff and more!
 - [x] Spaghetti code and no tests because who neads those 🙃
-- [ ] A chat-to-earn system
+- [x] A chat-to-earn system
 - [ ] More gambling commands
 - [ ] A shop system (maybe)
 - [ ] 24/7 hosting
 - [ ] Interaktiw dashbord (no, I will never do that)
 
 ### How to contribute?
-That's the neat part, you don't. I mean why would you want to do that in the first place? But seriously, if you hit your head really hard in your childhood and now for some reason you do actually want to contribute, then feel free to. There are no rules, just create a pull request/issue and I'll make sure to review it as soon as possible (assuming I won't be a lazy bimbo and I won't just ignore it). However, I would really appreciate it if you could followed this project's code style. And uhhh... thanks for being weird enough to even consider contributing to this messy project.
+That's the neat part, you don't. I mean why would you want to do that in the first place? But seriously, if you hit your head really hard in your childhood and now for some reason you do actually want to contribute, then feel free to. There are no rules, just create a pull request/issue and I'll make sure to review it as soon as possible (assuming I won't be a lazy bimbo and I won't just ignore it). However, I would really appreciate it if you could follow this project's code style. And uhhh... thanks for being weird enough to even consider contributing to this messy project.
 
 ### How to deploy?
 Again, why would you? Anyways, here's a little guide:

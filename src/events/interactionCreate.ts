@@ -39,7 +39,7 @@ const event: Event = {
 			return i.reply({ embeds: [embed], ephemeral: true });
 		}
 
-		let cooldown = cooldowns.find((cooldown) => cooldown.userId === i.user.id && cooldown.guildId === i.guildId && cooldown.commandName === command.name);
+		let cooldown = cooldowns.find((cooldown) => cooldown.userId === i.user.id && cooldown.guildId === i.guildId && cooldown.name === command.name);
 		if (command.cooldown) {
 			const cooldownTime = command.cooldown.time * 1000;
 
@@ -56,7 +56,7 @@ const event: Event = {
 				cooldown = cooldowns[cooldowns.push({
 					userId: i.user.id,
 					guildId: i.guildId!,
-					commandName: command.name,
+					name: command.name,
 					timesUsed: 0,
 					lastUsed: Date.now()
 				}) - 1]; // array.push returns the new length of the array so you can substract it by one to get the index of the pushed element

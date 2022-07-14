@@ -13,7 +13,7 @@ mongoose
 	.catch((err) => console.log(err));
 
 const client = new Client({
-	intents: [Intents.FLAGS.GUILDS]
+	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
 });
 
 // eslint-disable-next-line

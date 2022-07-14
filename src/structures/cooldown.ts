@@ -1,7 +1,7 @@
 interface Cooldown {
 	userId: string;
     guildId: string;
-    commandName: string;
+    name: string;
     timesUsed: number;
     lastUsed: number
 }
